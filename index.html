@@ -53,6 +53,8 @@
     th,td{padding:12px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
     th{color:var(--muted);font-weight:800;letter-spacing:.4px;text-transform:uppercase;font-size:12px}
     .small{font-size:12px;color:var(--muted)}
+    /* mensagem de jogo desativado */
+    .disabled-note{margin-top:12px;padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);color:var(--muted);font-weight:800}
   </style>
 </head>
 <body>
@@ -76,8 +78,14 @@
             <input id="playerName" placeholder="Seu nome" required maxlength="40" />
             <input id="playerEmail" placeholder="Seu e-mail" type="email" required />
           </div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="btn" type="submit">Começar a jogar</button>
+
+          <!-- EDITADO: botão de jogar removido conforme solicitado -->
+          <!-- antes: <button class="btn" type="submit">Começar a jogar</button> -->
+          <div class="disabled-note" aria-live="polite">
+            O jogo está temporariamente desativado. <strong>Em breve entraremos em contato com o campeão pelo e-mail cadastrado.</strong>
+          </div>
+
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
             <button class="btn secondary" id="goLeaderboardHome" type="button">Ver ranking completo</button>
           </div>
           <div class="small">O ranking exibirá apenas o seu <strong>nome</strong>. Seu e-mail é salvo apenas na planilha para controle.</div>
@@ -144,6 +152,9 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbyOYMQ7Aka_-yaCZn5vnd47_qinLW0VgGxa8Htcp7P6VUV3XMpdzs_qd5XGwPX_QRQ/exec';
 const API_TOKEN = 'CHUMBADA_TOKEN_123';
 
+// ====== GAME DESATIVADO (EDITADO) ======
+const GAME_DISABLED = true; // <-- se quiser reativar no futuro, coloque false
+
 // ====== DATA (iscas) ======
 const LURES = [
   { name: 'Ajisho', img: 'https://cdn.shopify.com/s/files/1/0454/5845/6736/files/AjiSho.jpg?v=1757702440' },
@@ -203,6 +214,7 @@ function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;","
 
 // ====== Game Flow ======
 function startGame(){
+  if(GAME_DISABLED) return; // EDITADO: impede início do jogo
   order=shuffle([...Array(LURES.length).keys()]); idx=0; score=0; correct=0; totalTime=0; remaining=DURATION;
   scoreEl.textContent=score; updateProgress(true);
   startEl.style.display='none'; resultsEl.style.display='none'; leaderEl.style.display='none'; gameEl.style.display='block';
@@ -254,8 +266,18 @@ function renderLeaderboardRows(rows){ const body=lbTable; if(!body) return; body
 function renderTop5(rows){ const body=document.querySelector('#top5Body'); if(!body) return; body.innerHTML=''; const top=(rows||[]).slice(0,5); if(top.length===0){ const tr=document.createElement('tr'); tr.innerHTML='<td colspan="5" class="small">Sem registros ainda. Jogue para entrar no TOP 5.</td>'; body.appendChild(tr); return;} top.forEach((e,i)=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td style="padding:6px">${i+1}</td><td style="padding:6px">${escapeHtml(e.name||'')}</td><td style="padding:6px">${e.correct||0}</td><td style="padding:6px">${Number(e.time||0).toFixed(1)}s</td><td style="padding:6px">${e.score||0}</td>`; body.appendChild(tr); }); }
 
 // ====== Events ======
-const signup = document.querySelector('#signup'); if(signup){ signup.addEventListener('submit', (e)=>{ e.preventDefault(); const name=$('#playerName').value.trim(); const email=$('#playerEmail').value.trim(); if(!name||!email) return; player={name,email}; startGame(); }); }
-const playAgainBtn=$('#playAgain'); if(playAgainBtn){ playAgainBtn.onclick=()=>{ startEl.style.display='none'; leaderEl.style.display='none'; startGame(); }; }
+const signup = document.querySelector('#signup'); 
+if(signup){
+  signup.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    if(GAME_DISABLED){
+      // não inicia o jogo; mantém a mensagem ao usuário
+      return;
+    }
+    const name=$('#playerName').value.trim(); const email=$('#playerEmail').value.trim(); if(!name||!email) return; player={name,email}; startGame();
+  });
+}
+const playAgainBtn=$('#playAgain'); if(playAgainBtn){ playAgainBtn.onclick=()=>{ if(GAME_DISABLED) return; startEl.style.display='none'; leaderEl.style.display='none'; startGame(); }; }
 const goLeaderboardBtn=$('#goLeaderboard'); if(goLeaderboardBtn){ goLeaderboardBtn.onclick=async()=>{ resultsEl.style.display='none'; leaderEl.style.display='block'; const rows=await fetchLeaderboardRemote(); renderLeaderboardRows(rows||[]); }; }
 const goLeaderboardHome=$('#goLeaderboardHome'); if(goLeaderboardHome){ goLeaderboardHome.onclick=async()=>{ startEl.style.display='none'; leaderEl.style.display='block'; const rows=await fetchLeaderboardRemote(); renderLeaderboardRows(rows||[]); }; }
 const backHomeBtn=$('#backHome'); if(backHomeBtn){ backHomeBtn.onclick=()=>{ leaderEl.style.display='none'; startEl.style.display='block'; }; }
