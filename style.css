@@ -244,3 +244,13 @@ h1, h2, h3 {
 .ranking-table tr:nth-child(even) {
   background-color: #f1f5fa;
 }
+
+/* Estilos para o iframe de ranking. Ele ocupa toda a largura disponível e
+   tem uma altura fixa para mostrar as primeiras posições. Ajuste a altura
+   conforme necessário. */
+.ranking-frame {
+  width: 100%;
+  height: 300px;
+  border: none;
+  margin-top: 1rem;
+}

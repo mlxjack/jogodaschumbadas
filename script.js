@@ -190,9 +190,7 @@ playerForm.addEventListener("submit", (e) => {
 playAgainBtn.addEventListener("click", () => {
   endScreen.classList.add("hidden");
   startScreen.classList.remove("hidden");
-  // Limpar ranking de fim de jogo
-  endRankingContainer.innerHTML = "";
-  // Carregar ranking na tela inicial novamente
+  // Carregar ranking novamente na tela inicial
   fetchRanking(startRankingContainer);
 });
 
@@ -218,7 +216,7 @@ function resetGame() {
 
 // Função para iniciar a partida
 function startGame() {
-  // carregar ranking na tela inicial durante o jogo (utilizado se o jogador voltar)
+  // Carregar ranking na tela inicial durante o jogo
   fetchRanking(startRankingContainer);
   // Armazenar momento de início da partida para calcular duração
   gameStartTimestamp = Date.now();
@@ -430,32 +428,30 @@ function endGame() {
   // Calcula o tempo total de jogo em milissegundos
   const tempoTotalMs = Date.now() - gameStartTimestamp;
   postScore(playerName, playerEmail, currentScore, correctAnswersCount, tempoTotalMs);
-  // Carregar ranking
+  // Carregar ranking de fim de jogo
   fetchRanking(endRankingContainer);
 }
 
-// Busca e exibe o ranking usando JSONP a partir do Apps Script. Esta abordagem
-// evita problemas de CORS ao injetar um <script> com callback. O Apps Script
-// deve ser configurado para detectar o parâmetro `callback` e retornar
-// dados no formato `callback([...])`. O ranking será exibido no container
-// fornecido. Se ocorrer algum erro no carregamento, uma mensagem é exibida.
+// Busca e exibe o ranking usando JSONP a partir do Apps Script. Esta
+// função gera dinamicamente um callback e injeta um <script> para
+// contornar a política de CORS. A tabela é construída sem a coluna
+// de data para atender à solicitação do usuário.
 function fetchRanking(container) {
-  container.innerHTML = '<p>Carregando ranking…</p>';
-  const callbackName = 'rankingCallback_' + Math.random().toString(36).substring(2);
+  if (!container) return;
+  container.innerHTML = '<p>Carregando ranking...</p>';
+  const callbackName = 'rankingCb_' + Math.random().toString(36).substring(2);
   window[callbackName] = function(data) {
     try {
-      // Ordena descendentemente pelo campo score ou Pontos
       const ranking = data.slice().sort((a, b) => {
         const aScore = parseFloat(a.score || a.Score || a.Pontos || 0);
         const bScore = parseFloat(b.score || b.Score || b.Pontos || 0);
         return bScore - aScore;
       });
-      let html = '<table class="ranking-table"><tr><th>Posição</th><th>Nome</th><th>Pontos</th><th>Data</th></tr>';
+      let html = '<table class="ranking-table"><tr><th>Posição</th><th>Nome</th><th>Pontos</th></tr>';
       ranking.slice(0, 10).forEach((row, index) => {
         const nome = row.nome || row['nome '] || row.Nome || row['Nome '] || '';
         const pontos = row.score || row.Score || row.Pontos || '';
-        const dataStr = row.data || row.Data || row.timestamp || '';
-        html += `<tr><td>${index + 1}</td><td>${nome}</td><td>${pontos}</td><td>${dataStr}</td></tr>`;
+        html += `<tr><td>${index + 1}</td><td>${nome}</td><td>${pontos}</td></tr>`;
       });
       html += '</table>';
       container.innerHTML = html;
@@ -463,17 +459,17 @@ function fetchRanking(container) {
       container.innerHTML = '<p>Não foi possível carregar o ranking no momento.</p>';
     } finally {
       delete window[callbackName];
-      script.remove();
+      if (scriptEl) scriptEl.remove();
     }
   };
-  const script = document.createElement('script');
-  script.src = `${SCRIPT_ENDPOINT}?callback=${callbackName}`;
-  script.onerror = () => {
+  const scriptEl = document.createElement('script');
+  scriptEl.src = `${SCRIPT_ENDPOINT}?callback=${callbackName}`;
+  scriptEl.onerror = () => {
     container.innerHTML = '<p>Não foi possível carregar o ranking no momento.</p>';
     delete window[callbackName];
-    script.remove();
+    scriptEl.remove();
   };
-  document.body.appendChild(script);
+  document.body.appendChild(scriptEl);
 }
 
 // Envia a pontuação do jogador para o servidor usando uma requisição GET.
