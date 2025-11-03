@@ -115,6 +115,13 @@ let selectedChumbadas = [];
 let usedHint = false;
 const usedPowers = { power1: false, power2: false, power3: false, power4: false };
 let freezeTimeActive = false;
+// Contador de acertos para registrar quantas respostas corretas o jogador
+// conseguiu ao longo da partida. Esse valor será enviado para a planilha.
+let correctAnswersCount = 0;
+
+// Timestamp do início da partida em milissegundos. É usado para
+// calcular o tempo total de jogo, que será enviado como tempo_ms na planilha.
+let gameStartTimestamp = 0;
 
 // Endpoint do Apps Script responsável por gravar e listar o ranking.
 // Esta URL deve ser atualizada conforme a implantação do Apps Script.
@@ -196,6 +203,8 @@ function resetGame() {
   playerDisplay.textContent = playerName;
   scoreDisplay.textContent = `Pontos: ${currentScore}`;
   hintTextEl.textContent = "";
+  // Reinicia o contador de acertos
+  correctAnswersCount = 0;
   // Selecionar 30 chumbadas aleatórias
   const shuffled = shuffle(chumbadasData);
   selectedChumbadas = shuffled.slice(0, GAME_ROUNDS);
@@ -205,6 +214,8 @@ function resetGame() {
 function startGame() {
   // carregar ranking na tela inicial durante o jogo (utilizado se o jogador voltar)
   fetchRanking(startRankingContainer);
+  // Armazenar momento de início da partida para calcular duração
+  gameStartTimestamp = Date.now();
   showQuestion();
 }
 
@@ -325,6 +336,8 @@ function handleAnswer(e) {
   if (isCorrect) {
     currentScore += 10 + timePoints;
     btn.classList.add("correct");
+    // Incrementa número de acertos
+    correctAnswersCount++;
   } else {
     currentScore -= 1;
     if (currentScore < 0) currentScore = 0;
@@ -408,7 +421,9 @@ function endGame() {
   endScreen.classList.remove("hidden");
   endScoreEl.textContent = `Você fez ${currentScore} pontos!`;
   // Enviar pontuação para planilha (dependendo da configuração)
-  postScore(playerName, playerEmail, currentScore);
+  // Calcula o tempo total de jogo em milissegundos
+  const tempoTotalMs = Date.now() - gameStartTimestamp;
+  postScore(playerName, playerEmail, currentScore, correctAnswersCount, tempoTotalMs);
   // Carregar ranking
   fetchRanking(endRankingContainer);
 }
@@ -467,16 +482,19 @@ function fetchRanking(container) {
 // (URLSearchParams) contendo nome, email, score e data. Como a
 // requisição usa `mode: no-cors`, o retorno não é analisado; apenas
 // enviamos os dados para o servidor.
-function postScore(name, email, points) {
+function postScore(name, email, points, acertos, tempoMs) {
   if (!SCRIPT_ENDPOINT) {
     console.log('Salvamento de pontuação não configurado.');
     return;
   }
+  // Monta os parâmetros conforme os cabeçalhos da planilha. Inclui o número
+  // de acertos (acertos) e o tempo total em milissegundos (tempo_ms).
   const params = new URLSearchParams({
     nome: name,
     email: email,
-    score: points,
-    data: new Date().toLocaleDateString('pt-BR')
+    acertos: acertos || 0,
+    tempo_ms: tempoMs || '',
+    score: points
   });
   // Usa fetch com método GET e modo no-cors para evitar preflight
   fetch(`${SCRIPT_ENDPOINT}?${params.toString()}`, { mode: 'no-cors' })
