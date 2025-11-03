@@ -380,9 +380,8 @@ let gameState = {
     score: 0,
     currentRound: 1,
     totalRounds: 30,
-    // Tempo de resposta inicial (em segundos). Alterado para 20s conforme solicitado.
-    timeLeft: 20,
-    maxTime: 20,
+    timeLeft: 10,
+    maxTime: 10,
     isAnswering: false,
     currentChumbada: null,
     currentOptions: [],
@@ -414,6 +413,8 @@ const hintText = document.getElementById('hintText');
 const rankingBtn = document.getElementById('rankingBtn');
 const rankingModal = document.getElementById('rankingModal');
 const rankingList = document.getElementById('rankingList');
+// Lista de ranking exibida na tela inicial
+const initialRankingList = document.getElementById('initialRankingList');
 const resultModal = document.getElementById('resultModal');
 const resultIcon = document.getElementById('resultIcon');
 const resultText = document.getElementById('resultText');
@@ -681,9 +682,8 @@ function endGame() {
         score: 0,
         currentRound: 1,
         totalRounds: 30,
-        // Reinicia o tempo para 20s na próxima partida
-        timeLeft: 20,
-        maxTime: 20,
+        timeLeft: 10,
+        maxTime: 10,
         isAnswering: false,
         currentChumbada: null,
         currentOptions: [],
@@ -720,39 +720,62 @@ function saveScoreToGoogleSheets() {
     });
 }
 
-function loadRankingFromGoogleSheets() {
-    // Carrega do localStorage (fallback)
-    const scores = JSON.parse(localStorage.getItem('chumbadaScores') || '[]');
-    
-    // Ordena por pontuação
-    scores.sort((a, b) => b.score - a.score);
-    
-    // Exibe os top 10
-    rankingList.innerHTML = '';
-    
-    if (scores.length === 0) {
-        rankingList.innerHTML = '<p class="loading">Nenhum score registrado ainda.</p>';
-        return;
-    }
-    
-    scores.slice(0, 10).forEach((score, index) => {
-        const position = index + 1;
-        const item = document.createElement('div');
-        item.className = `ranking-item ${position <= 3 ? 'top-' + position : ''}`;
-        
-        const medal = position === 1 ? '🥇' : position === 2 ? '🥈' : position === 3 ? '🥉' : position;
-        
-        item.innerHTML = `
-            <div class="ranking-position">${medal}</div>
-            <div class="ranking-info">
-                <div class="ranking-name">${score.name}</div>
-                <div class="ranking-email">${score.email}</div>
-            </div>
-            <div class="ranking-score">${score.score}</div>
-        `;
-        
-        rankingList.appendChild(item);
-    });
+function loadRankingFromGoogleSheets(listElement = rankingList) {
+    // Mostra mensagem de carregamento enquanto os dados são recuperados
+    listElement.innerHTML = '<p class="loading">Carregando ranking...</p>';
+    // Gera um nome de callback único para evitar colisões globais.
+    const callbackName = 'rankingCallback_' + Math.random().toString(36).substring(2);
+    // Define a função de callback no escopo global. Ela será chamada pelo
+    // Apps Script com os dados de ranking. Após a execução removemos o
+    // script injetado e limpamos a função global.
+    window[callbackName] = function(response) {
+        try {
+            document.body.removeChild(script);
+            delete window[callbackName];
+            let scores = [];
+            if (Array.isArray(response)) {
+                scores = response;
+            } else if (response && response.ranking) {
+                scores = response.ranking;
+            }
+            // Ordena por pontuação decrescente
+            scores.sort((a, b) => (parseInt(b.score) || 0) - (parseInt(a.score) || 0));
+            if (scores.length === 0) {
+                listElement.innerHTML = '<p class="loading">Nenhum score registrado ainda.</p>';
+                return;
+            }
+            // Exibe os top 10
+            listElement.innerHTML = '';
+            scores.slice(0, 10).forEach((score, index) => {
+                const position = index + 1;
+                const item = document.createElement('div');
+                item.className = `ranking-item ${position <= 3 ? 'top-' + position : ''}`;
+                const medal = position === 1 ? '🥇' : position === 2 ? '🥈' : position === 3 ? '🥉' : position;
+                item.innerHTML = `
+                    <div class="ranking-position">${medal}</div>
+                    <div class="ranking-info">
+                        <div class="ranking-name">${score.name || score.nome || ''}</div>
+                        <div class="ranking-email">${score.email || score['e-mail'] || ''}</div>
+                    </div>
+                    <div class="ranking-score">${score.score}</div>
+                `;
+                listElement.appendChild(item);
+            });
+        } catch (error) {
+            console.error('Erro ao processar ranking:', error);
+            listElement.innerHTML = '<p class="loading">Erro ao carregar ranking.</p>';
+        }
+    };
+    // Cria o elemento <script> que irá carregar o ranking. O Apps Script
+    // deverá reconhecer o parâmetro 'callback' e retornar a chamada de
+    // função apropriada. O timestamp evita cache.
+    const script = document.createElement('script');
+    script.src = `${SCRIPT_ENDPOINT}?callback=${callbackName}&ts=${Date.now()}`;
+    script.onerror = function() {
+        delete window[callbackName];
+        listElement.innerHTML = '<p class="loading">Erro ao carregar ranking.</p>';
+    };
+    document.body.appendChild(script);
 }
 
 // ============================================
@@ -813,3 +836,11 @@ powerItems.forEach(power => {
 
 // Inicializa a disponibilidade de poderes
 updatePowerAvailability();
+
+// Ao carregar a página, exibe o ranking na tela inicial
+document.addEventListener('DOMContentLoaded', () => {
+    // Carrega o ranking no painel inicial se o elemento existir
+    if (typeof initialRankingList !== 'undefined' && initialRankingList) {
+        loadRankingFromGoogleSheets(initialRankingList);
+    }
+});

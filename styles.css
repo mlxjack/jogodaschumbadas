@@ -632,6 +632,24 @@ body {
     padding: 20px;
 }
 
+/* Ranking inicial na tela de login */
+.initial-ranking {
+    margin-top: 30px;
+    width: 100%;
+    padding: 20px 0;
+    box-sizing: border-box;
+}
+.initial-ranking h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 20px;
+    color: var(--color-dark-blue);
+}
+.initial-ranking .ranking-list {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
 /* Result Modal */
 .result-modal {
     max-width: 400px;
