@@ -1,173 +1,78 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo da Chumbada Oficial</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo da Chumbada Oficial</title>
+  <!-- Import a sporty Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Tela de Login -->
-    <div id="loginScreen" class="screen active">
-        <div class="login-container">
-            <img src="https://cdn.shopify.com/s/files/1/0454/5845/6736/files/Logo-chumbada-OFICIAL-horizonatal-2_f758e5db-514c-4559-8549-94cd56f40ef7.png?v=1756759937" alt="Logo Chumbada Oficial" class="logo">
-            
-            <h1>Bem-vindo ao Jogo da Chumbada Oficial</h1>
-            
-            <div class="prize-info">
-                <p><strong>🏆 Premiação Especial!</strong></p>
-                <p>Os 3 primeiros colocados no ranking em <strong>30/10/2025</strong> ganharão prêmios da Chumbada Oficial!</p>
-                <p>#1 🥇 | #2 🥈 | #3 🥉</p>
-            </div>
-
-            <form id="loginForm" class="login-form">
-                <div class="form-group">
-                    <label for="playerName">Seu Nome:</label>
-                    <input type="text" id="playerName" name="playerName" required placeholder="Digite seu nome">
-                </div>
-
-                <div class="form-group">
-                    <label for="playerEmail">Seu E-mail:</label>
-                    <input type="email" id="playerEmail" name="playerEmail" required placeholder="Digite seu e-mail">
-                </div>
-
-                <button type="submit" class="btn btn-primary">Iniciar Jogo</button>
-            </form>
-
-            <div class="login-footer">
-                <p>Adivinhe os nomes das chumbadas e acumule pontos!</p>
-            </div>
-
-            <!-- Ranking inicial exibido na tela de login -->
-            <div class="initial-ranking">
-                <h2>Ranking Atual</h2>
-                <div id="initialRankingList" class="ranking-list">
-                    <p class="loading">Carregando ranking...</p>
-                </div>
-            </div>
+  <!-- Página Inicial / Cadastro -->
+  <div id="start-screen" class="screen">
+    <div class="card">
+      <img src="https://cdn.shopify.com/s/files/1/0454/5845/6736/files/Logo-chumbada-OFICIAL-horizonatal-2_f758e5db-514c-4559-8549-94cd56f40ef7.png?v=1756759937" alt="Logo Chumbada Oficial" class="logo">
+      <h1>Jogo da Chumbada Oficial</h1>
+      <p>Entre no jogo adivinhando o nome correto da chumbada. Os 3 primeiros colocados do ranking no dia <strong>30/10/2025</strong> ganharão um prêmio exclusivo da Chumbada Oficial!</p>
+      <form id="player-form" autocomplete="off">
+        <div class="form-group">
+          <label for="player-name">Nome:</label>
+          <input type="text" id="player-name" name="player-name" required>
         </div>
+        <div class="form-group">
+          <label for="player-email">E‑mail:</label>
+          <input type="email" id="player-email" name="player-email" required>
+        </div>
+        <button type="submit" class="primary-btn">Iniciar Jogo</button>
+      </form>
+      <!-- Container para exibir a tabela de ranking -->
+      <div id="start-ranking" class="ranking-container"></div>
     </div>
+  </div>
 
-    <!-- Tela Principal do Jogo -->
-    <div id="gameScreen" class="screen">
-        <div class="game-header">
-            <div class="header-left">
-                <img src="https://cdn.shopify.com/s/files/1/0454/5845/6736/files/Logo-chumbada-OFICIAL-horizonatal-2_f758e5db-514c-4559-8549-94cd56f40ef7.png?v=1756759937" alt="Logo" class="logo-small">
-            </div>
-            <div class="header-center">
-                <h2 id="playerDisplayName"></h2>
-            </div>
-            <div class="header-right">
-                <button id="rankingBtn" class="btn btn-secondary">Ranking</button>
-            </div>
+  <!-- Tela do Jogo -->
+  <div id="game-screen" class="screen hidden">
+    <div class="card">
+      <header class="game-header">
+        <div class="player-info">
+          <span id="player-display"></span>
+          <span id="score-display">Pontos: 0</span>
         </div>
-
-        <div class="game-container">
-            <!-- Painel de Pontuação e Tempo -->
-            <div class="score-panel">
-                <div class="score-item">
-                    <span class="label">Pontuação</span>
-                    <span id="scoreDisplay" class="value">0</span>
-                </div>
-                <div class="score-item">
-                    <span class="label">Tempo</span>
-                    <span id="timerDisplay" class="value">10s</span>
-                </div>
-                <div class="score-item">
-                    <span class="label">Rodada</span>
-                    <span id="roundDisplay" class="value">1/30</span>
-                </div>
-            </div>
-
-            <!-- Imagem da Chumbada -->
-            <div class="image-container">
-                <img id="chumbadaImage" src="" alt="Chumbada" class="chumbada-image">
-            </div>
-
-            <!-- Opções de Resposta -->
-            <div class="options-container">
-                <button class="option-btn" data-index="0"></button>
-                <button class="option-btn" data-index="1"></button>
-                <button class="option-btn" data-index="2"></button>
-                <button class="option-btn" data-index="3"></button>
-            </div>
-
-            <!-- Painel de Poderes (Condições de Pesca) -->
-            <div class="powers-panel">
-                <div class="power-item" id="power1" data-power="calm-sea" data-points="100">
-                    <div class="power-icon">🌊</div>
-                    <div class="power-info">
-                        <div class="power-name">Mar Calmo</div>
-                        <div class="power-desc">+30s no tempo</div>
-                        <div class="power-points">100 pts</div>
-                    </div>
-                </div>
-
-                <div class="power-item" id="power2" data-power="calm-fishing" data-points="150">
-                    <div class="power-icon">⏸️</div>
-                    <div class="power-info">
-                        <div class="power-name">Pesca Tranquila</div>
-                        <div class="power-desc">Pausa o tempo</div>
-                        <div class="power-points">150 pts</div>
-                    </div>
-                </div>
-
-                <div class="power-item" id="power3" data-power="fish-on-line" data-points="200">
-                    <div class="power-icon">🎣</div>
-                    <div class="power-info">
-                        <div class="power-name">Tem Peixe!</div>
-                        <div class="power-desc">Elimina 2 opções</div>
-                        <div class="power-points">200 pts</div>
-                    </div>
-                </div>
-
-                <div class="power-item" id="power4" data-power="official-fishing" data-points="250">
-                    <div class="power-icon">✨</div>
-                    <div class="power-info">
-                        <div class="power-name">Pescaria Oficial</div>
-                        <div class="power-desc">Mostra resposta</div>
-                        <div class="power-points">250 pts</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Botão de Dica -->
-            <div class="hint-container">
-                <button id="hintBtn" class="btn btn-hint" disabled>💡 Usar Dica</button>
-                <div id="hintText" class="hint-text"></div>
-            </div>
+        <div class="timer">
+          Tempo: <span id="time-display">10</span>s <span id="question-counter" class="question-counter"></span>
         </div>
+      </header>
+      <main class="game-main">
+        <div id="image-container" class="image-container">
+          <img id="chumbada-image" src="" alt="Chumbada" />
+        </div>
+        <div id="answer-buttons" class="answer-buttons"></div>
+        <!-- Mensagem de carregamento da imagem -->
+        <div id="loading-message" class="loading-message hidden">Carregando imagem...</div>
+        <div class="controls">
+          <button id="hint-button" class="secondary-btn" disabled>Dica (50 pts)</button>
+          <button id="power1" class="secondary-btn" disabled>Mar calmo<br><small>+30s (100 pts)</small></button>
+          <button id="power2" class="secondary-btn" disabled>Pesca tranquila<br><small>Parar tempo (150 pts)</small></button>
+          <button id="power3" class="secondary-btn" disabled>Tem peixe na linha!<br><small>Elimina 2 (200 pts)</small></button>
+          <button id="power4" class="secondary-btn" disabled>Pescaria oficial<br><small>Mostra resposta (250 pts)</small></button>
+        </div>
+        <div id="hint-text" class="hint-text"></div>
+      </main>
     </div>
+  </div>
 
-    <!-- Modal de Ranking -->
-    <div id="rankingModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Ranking Geral</h2>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div id="rankingList" class="ranking-list">
-                    <p class="loading">Carregando ranking...</p>
-                </div>
-            </div>
-        </div>
+  <!-- Tela de Fim de Jogo -->
+  <div id="end-screen" class="screen hidden">
+    <div class="card">
+      <h2>Fim de Jogo!</h2>
+      <p id="final-score"></p>
+      <button id="play-again" class="primary-btn">Jogar novamente</button>
+      <!-- Container para exibir a tabela de ranking ao final do jogo -->
+      <div id="end-ranking" class="ranking-container"></div>
     </div>
+  </div>
 
-    <!-- Modal de Resultado -->
-    <div id="resultModal" class="modal">
-        <div class="modal-content result-modal">
-            <div class="result-message">
-                <span id="resultIcon"></span>
-                <span id="resultText"></span>
-            </div>
-            <div class="result-points">
-                <span id="resultPoints"></span>
-            </div>
-        </div>
-    </div>
-
-    <script src="chumbadas_data.json" type="application/json"></script>
-    <script src="game.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
