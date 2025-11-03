@@ -125,7 +125,7 @@ let gameStartTimestamp = 0;
 
 // Endpoint do Apps Script responsável por gravar e listar o ranking.
 // Esta URL deve ser atualizada conforme a implantação do Apps Script.
-const SCRIPT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzj51NXXV2LqN0YHsMrwuJaWmWiWWRFzE0eV_L-Mcc9WXRXSdxYHaUbHHDFgpVy27tn/exec';
+const SCRIPT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwufIXS3Jw4-2bpUAeBVVvuKvkUvaYaVgivgjPCu870vcyFNaeK4x1_N5kZG8ekfZ7L/exec';
 
 // As constantes abaixo eram usadas em versões anteriores para consultar
 // diretamente a planilha via opensheet.elk.sh. Foram mantidas para
