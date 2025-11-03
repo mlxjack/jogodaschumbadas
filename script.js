@@ -127,6 +127,12 @@ let gameStartTimestamp = 0;
 // Esta URL deve ser atualizada conforme a implantação do Apps Script.
 const SCRIPT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzj51NXXV2LqN0YHsMrwuJaWmWiWWRFzE0eV_L-Mcc9WXRXSdxYHaUbHHDFgpVy27tn/exec';
 
+// ID e nome da planilha usados para buscar o ranking via opensheet.elk.sh.
+// Se o cabeçalho da planilha for alterado (por exemplo, nome com espaços), a API
+// retornará os campos conforme aparecem na planilha.
+const SHEET_ID = '1pYUm3D4MemjLShWK5H1P6d3fCuwIwLPZpO4iUxg1OLY';
+const SHEET_NAME = 'Pagina1';
+
 // Elementos da DOM
 const startScreen = document.getElementById("start-screen");
 const gameScreen = document.getElementById("game-screen");
@@ -428,52 +434,38 @@ function endGame() {
   fetchRanking(endRankingContainer);
 }
 
-// Busca e exibe o ranking da planilha usando JSONP. Esta função contorna as
-// restrições de CORS ao injetar um script com callback. O Apps Script deve
-// suportar o parâmetro `callback` e retornar JSONP conforme implementado no
-// código do servidor. A tabela de ranking será exibida no container
-// fornecido. Se ocorrer um erro no carregamento, uma mensagem será exibida.
+// Busca e exibe o ranking da planilha usando a API opensheet.elk.sh, que
+// transforma planilhas públicas em JSON acessível via CORS. A tabela de
+// ranking será exibida no container fornecido. Em caso de erro, uma
+// mensagem é mostrada. O ranking considera as colunas existentes na
+// planilha, portanto garanta que os cabeçalhos estejam corretos.
 function fetchRanking(container) {
   container.innerHTML = '<p>Carregando ranking…</p>';
-  // Cria um nome de callback único para processar a resposta JSONP
-  const callbackName = 'handleRanking_' + Math.random().toString(36).substring(2);
-  // Define a função callback no escopo global
-  window[callbackName] = function(data) {
-    try {
-      // Ordena descendentemente pelo campo score ou Pontos
+  const url = `https://opensheet.elk.sh/${SHEET_ID}/${encodeURIComponent(SHEET_NAME)}`;
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      // Ordena descendentemente pela coluna score (ou Score/Pontos) se existir
       const ranking = data.slice().sort((a, b) => {
-        const aScore = parseFloat(a.score || a.Pontos || 0);
-        const bScore = parseFloat(b.score || b.Pontos || 0);
+        const aScore = parseFloat(a.score || a.Score || a.Pontos || 0);
+        const bScore = parseFloat(b.score || b.Score || b.Pontos || 0);
         return bScore - aScore;
       });
       let html = '<table class="ranking-table"><tr><th>Posição</th><th>Nome</th><th>Pontos</th><th>Data</th></tr>';
       ranking.slice(0, 10).forEach((row, index) => {
-        const nome = row.Nome || row.nome || row.Name || row.name || '';
-        const pontos = row.Pontos || row.score || row.Score || '';
-        const dataStr = row.Data || row.data || row.date || '';
+        // Alguns cabeçalhos podem ter espaços ou variações, portanto usamos
+        // diferentes chaves para tentar obter os valores.
+        const nome = row['nome'] || row['nome '] || row['Nome'] || row['Nome '] || '';
+        const pontos = row['score'] || row['Score'] || row['Pontos'] || '';
+        const dataStr = row['data'] || row['Data'] || row['timestamp'] || '';
         html += `<tr><td>${index + 1}</td><td>${nome}</td><td>${pontos}</td><td>${dataStr}</td></tr>`;
       });
       html += '</table>';
       container.innerHTML = html;
-    } catch (err) {
+    })
+    .catch(() => {
       container.innerHTML = '<p>Não foi possível carregar o ranking no momento.</p>';
-    } finally {
-      // Remove a função callback e o script para evitar vazamento de memória
-      delete window[callbackName];
-      if (script) script.remove();
-    }
-  };
-  // Cria o elemento script apontando para o endpoint do Apps Script com
-  // parâmetro callback. O Apps Script deve retornar algo como
-  // `callbackName([...])`.
-  const script = document.createElement('script');
-  script.src = `${SCRIPT_ENDPOINT}?callback=${callbackName}`;
-  script.onerror = () => {
-    container.innerHTML = '<p>Não foi possível carregar o ranking no momento.</p>';
-    delete window[callbackName];
-    script.remove();
-  };
-  document.body.appendChild(script);
+    });
 }
 
 // Envia a pontuação do jogador para o servidor usando uma requisição GET.
