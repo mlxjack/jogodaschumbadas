@@ -116,9 +116,9 @@ let usedHint = false;
 const usedPowers = { power1: false, power2: false, power3: false, power4: false };
 let freezeTimeActive = false;
 
-// Endpoint do Apps Script responsável por gravar e listar o ranking. A mesma
-// URL é utilizada para POST (envio de pontuações) e GET (listar ranking).
-const SCRIPT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbw0CPPoEvxjRcpkg8j3sHOPGkMZ85sS8haQrj_1Q-WV-e9F9G6m16xrgf44kVdzh30/exec';
+// Endpoint do Apps Script responsável por gravar e listar o ranking.
+// Esta URL deve ser atualizada conforme a implantação do Apps Script.
+const SCRIPT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzj51NXXV2LqN0YHsMrwuJaWmWiWWRFzE0eV_L-Mcc9WXRXSdxYHaUbHHDFgpVy27tn/exec';
 
 // Elementos da DOM
 const startScreen = document.getElementById("start-screen");
@@ -413,65 +413,74 @@ function endGame() {
   fetchRanking(endRankingContainer);
 }
 
-// Busca ranking em uma planilha pública do Google via API.
-// Esta função utiliza a API do opensheet.elk.sh, que transforma
-// planilhas públicas em JSON. Se preferir outra API, ajuste aqui.
-async function fetchRanking(container) {
-  /**
-   * Busca ranking diretamente do Apps Script.
-   * O Apps Script deve retornar uma lista de objetos em JSON com os campos
-   * necessários (por exemplo, nome, score/pontos e data). O ranking será
-   * ordenado pelo campo de pontuação.
-   */
-  container.innerHTML = "<p>Carregando ranking...</p>";
-  try {
-    const res = await fetch(SCRIPT_ENDPOINT);
-    const data = await res.json();
-    // Ordena descendentemente pelo campo score ou Pontos
-    const ranking = data.slice().sort((a, b) => {
-      const aScore = parseFloat(a.score || a.Pontos || 0);
-      const bScore = parseFloat(b.score || b.Pontos || 0);
-      return bScore - aScore;
-    });
-    let html = '<table class="ranking-table"><tr><th>Posição</th><th>Nome</th><th>Pontos</th><th>Data</th></tr>';
-    ranking.slice(0, 10).forEach((row, index) => {
-      const nome = row.Nome || row.nome || row.Name || row.name || '';
-      const pontos = row.Pontos || row.score || row.Score || '';
-      const dataStr = row.Data || row.date || '';
-      html += `<tr><td>${index + 1}</td><td>${nome}</td><td>${pontos}</td><td>${dataStr}</td></tr>`;
-    });
-    html += '</table>';
-    container.innerHTML = html;
-  } catch (err) {
-    container.innerHTML = "<p>Não foi possível carregar o ranking no momento.</p>";
-  }
+// Busca e exibe o ranking da planilha usando JSONP. Esta função contorna as
+// restrições de CORS ao injetar um script com callback. O Apps Script deve
+// suportar o parâmetro `callback` e retornar JSONP conforme implementado no
+// código do servidor. A tabela de ranking será exibida no container
+// fornecido. Se ocorrer um erro no carregamento, uma mensagem será exibida.
+function fetchRanking(container) {
+  container.innerHTML = '<p>Carregando ranking…</p>';
+  // Cria um nome de callback único para processar a resposta JSONP
+  const callbackName = 'handleRanking_' + Math.random().toString(36).substring(2);
+  // Define a função callback no escopo global
+  window[callbackName] = function(data) {
+    try {
+      // Ordena descendentemente pelo campo score ou Pontos
+      const ranking = data.slice().sort((a, b) => {
+        const aScore = parseFloat(a.score || a.Pontos || 0);
+        const bScore = parseFloat(b.score || b.Pontos || 0);
+        return bScore - aScore;
+      });
+      let html = '<table class="ranking-table"><tr><th>Posição</th><th>Nome</th><th>Pontos</th><th>Data</th></tr>';
+      ranking.slice(0, 10).forEach((row, index) => {
+        const nome = row.Nome || row.nome || row.Name || row.name || '';
+        const pontos = row.Pontos || row.score || row.Score || '';
+        const dataStr = row.Data || row.data || row.date || '';
+        html += `<tr><td>${index + 1}</td><td>${nome}</td><td>${pontos}</td><td>${dataStr}</td></tr>`;
+      });
+      html += '</table>';
+      container.innerHTML = html;
+    } catch (err) {
+      container.innerHTML = '<p>Não foi possível carregar o ranking no momento.</p>';
+    } finally {
+      // Remove a função callback e o script para evitar vazamento de memória
+      delete window[callbackName];
+      if (script) script.remove();
+    }
+  };
+  // Cria o elemento script apontando para o endpoint do Apps Script com
+  // parâmetro callback. O Apps Script deve retornar algo como
+  // `callbackName([...])`.
+  const script = document.createElement('script');
+  script.src = `${SCRIPT_ENDPOINT}?callback=${callbackName}`;
+  script.onerror = () => {
+    container.innerHTML = '<p>Não foi possível carregar o ranking no momento.</p>';
+    delete window[callbackName];
+    script.remove();
+  };
+  document.body.appendChild(script);
 }
 
-// Envia a pontuação do jogador para a planilha por meio de um endpoint
-// configurável. Para que funcione, o usuário deverá configurar uma API
-// (por exemplo, via Google Apps Script, SheetDB ou qualquer serviço
-// equivalente) que aceite requisição POST com os campos nome, email, pontos e data.
-async function postScore(name, email, points) {
-  // URL do script responsável por gravar os dados na planilha.
-  // Substitua por sua URL quando estiver configurado.
-  // URL do Apps Script fornecido para gravar as pontuações. Esta URL deve
-  // aceitar uma chamada POST com JSON contendo Nome, Email, Pontos e Data.
-  // URL atual do Apps Script para envio de pontuações
-  const scriptUrl = SCRIPT_ENDPOINT;
-  if (!scriptUrl) {
-    console.log("Salvamento de pontuação não configurado.");
+// Envia a pontuação do jogador para o servidor usando uma requisição GET.
+// Esta abordagem evita a necessidade de pré-voo CORS, pois o Apps Script
+// tratará os parâmetros na URL. A função cria um objeto de query
+// (URLSearchParams) contendo nome, email, score e data. Como a
+// requisição usa `mode: no-cors`, o retorno não é analisado; apenas
+// enviamos os dados para o servidor.
+function postScore(name, email, points) {
+  if (!SCRIPT_ENDPOINT) {
+    console.log('Salvamento de pontuação não configurado.');
     return;
   }
-  try {
-    await fetch(scriptUrl, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nome: name, email: email, score: points, data: new Date().toLocaleDateString('pt-BR') })
-    });
-  } catch (err) {
-    console.error('Erro ao enviar pontuação: ', err);
-  }
+  const params = new URLSearchParams({
+    nome: name,
+    email: email,
+    score: points,
+    data: new Date().toLocaleDateString('pt-BR')
+  });
+  // Usa fetch com método GET e modo no-cors para evitar preflight
+  fetch(`${SCRIPT_ENDPOINT}?${params.toString()}`, { mode: 'no-cors' })
+    .catch(err => console.error('Erro ao enviar pontuação:', err));
 }
 
 // Carregar ranking inicial na página de boas-vindas
