@@ -1,0 +1,246 @@
+/* Global styles */
+body {
+  margin: 0;
+  font-family: 'Oswald', sans-serif;
+  /* Cria um gradiente suave que combina azul claro e branco para dar
+     sensação de profundidade e modernidade ao layout */
+  background: linear-gradient(160deg, #e3f2fd 0%, #ffffff 100%);
+  color: #002b5b; /* dark blue from logo */
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+h1, h2, h3 {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+/* Utility classes */
+.hidden {
+  display: none !important;
+}
+
+.screen {
+  width: 100%;
+  max-width: 700px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Cartão central para iniciar e jogar. Dá aspecto profissional com
+   cantos arredondados e sombra. */
+.card {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Logo */
+.logo {
+  max-width: 300px;
+  display: block;
+  margin: 0 auto 1rem;
+}
+
+/* Form styles */
+.form-group {
+  margin-bottom: 1rem;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #f5f9ff;
+}
+
+/* Buttons */
+.primary-btn, .secondary-btn {
+  background-color: #ff6f00; /* orange from logo */
+  color: #ffffff;
+  border: none;
+  padding: 12px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  margin: 6px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+.primary-btn:hover, .secondary-btn:hover:not(:disabled) {
+  background-color: #e55a00;
+  transform: translateY(-2px);
+}
+.primary-btn:disabled, .secondary-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.primary-btn {
+  font-weight: 600;
+}
+.secondary-btn {
+  font-size: 0.8rem;
+  line-height: 1.2;
+  padding: 8px 12px;
+}
+
+/* Scoreboard / barra superior */
+.game-header {
+  background-color: #002b5b;
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+/* Exibe o número da pergunta ao lado do tempo */
+.question-counter {
+  font-size: 1rem;
+  margin-left: 1rem;
+}
+
+/* Game header */
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+.game-header .player-info span + span {
+  margin-left: 1rem;
+}
+.timer {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ff6f00;
+}
+
+/* Game main */
+.game-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.image-container {
+  width: 320px;
+  height: 320px;
+  border: none;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f9ff;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+}
+#chumbada-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.answer-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+.answer-buttons button {
+  flex: 1 1 calc(50% - 10px);
+  margin: 5px;
+  padding: 14px 10px;
+  border-radius: 8px;
+  border: 2px solid #002b5b;
+  background-color: #ffffff;
+  color: #002b5b;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.answer-buttons button.correct {
+  background-color: #00a859; /* green for correct */
+  color: #ffffff;
+  border-color: #008040;
+}
+.answer-buttons button.wrong {
+  background-color: #c62828; /* red for wrong */
+  color: #ffffff;
+  border-color: #b71c1c;
+}
+.answer-buttons button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+.controls button {
+  min-width: 120px;
+  margin: 4px;
+}
+
+/* Hint */
+.hint-text {
+  margin-top: 0.5rem;
+  font-style: italic;
+  color: #00478f; /* light blue from logo */
+  min-height: 20px;
+  border: 1px dashed #00478f;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+/* Mensagem de carregamento da imagem */
+.loading-message {
+  font-style: italic;
+  color: #888888;
+  margin-bottom: 10px;
+}
+
+/* Ranking */
+.ranking-container {
+  margin-top: 1rem;
+}
+.ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+.ranking-table th, .ranking-table td {
+  border: 1px solid #cccccc;
+  padding: 8px;
+  text-align: center;
+}
+.ranking-table th {
+  background-color: #002b5b;
+  color: #ffffff;
+}
+.ranking-table tr:nth-child(even) {
+  background-color: #f1f5fa;
+}
