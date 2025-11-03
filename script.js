@@ -447,7 +447,8 @@ async function postScore(name, email, points) {
   // Substitua por sua URL quando estiver configurado.
   // URL do Apps Script fornecido para gravar as pontuações. Esta URL deve
   // aceitar uma chamada POST com JSON contendo Nome, Email, Pontos e Data.
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycby0ElmQ6Ie6gdtae7O6GbZNAVyL5C5xQT9GpdQ0AwFAQ0SRCxhLtOYlaIfsdObEZ4-t/exec';
+  // URL atual do Apps Script para envio de pontuações
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxOAQ9DTqlHbrcTmr3SHZXu3cLwvfKUtQHeLXmM4iXq0wgl5OAxwLvvE6AOLdqd3TaG/exec';
   if (!scriptUrl) {
     console.log("Salvamento de pontuação não configurado.");
     return;
