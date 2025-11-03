@@ -118,7 +118,7 @@ let freezeTimeActive = false;
 
 // Endpoint do Apps Script responsável por gravar e listar o ranking. A mesma
 // URL é utilizada para POST (envio de pontuações) e GET (listar ranking).
-const SCRIPT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbxOAQ9DTqlHbrcTmr3SHZXu3cLwvfKUtQHeLXmM4iXq0wgl5OAxwLvvE6AOLdqd3TaG/exec';
+const SCRIPT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbw0CPPoEvxjRcpkg8j3sHOPGkMZ85sS8haQrj_1Q-WV-e9F9G6m16xrgf44kVdzh30/exec';
 
 // Elementos da DOM
 const startScreen = document.getElementById("start-screen");
