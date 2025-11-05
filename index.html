@@ -4,52 +4,81 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jogo da Chumbada Oficial</title>
-  <!-- Import a sporty Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#0B1A2A">
 </head>
 <body>
+  <!-- Splash minimalista -->
+  <section id="splash" class="splash">
+    <div class="splash-inner">
+      <img class="splash-logo" src="https://cdn.shopify.com/s/files/1/0454/5845/6736/files/Logo-chumbada-OFICIAL-horizonatal-2_f758e5db-514c-4559-8549-94cd56f40ef7.png?v=1756759937" alt="Chumbada Oficial">
+      <h1>Jogo da Chumbada</h1>
+      <button id="enter-btn" class="primary-btn big">Play</button>
+    </div>
+  </section>
+
+  <!-- BG -->
+  <div class="bg-image"></div>
+  <div class="bg-gradient"></div>
+
+  <!-- Loader entre transições -->
+  <div id="loader" class="loader hidden">
+    <div class="spinner"></div>
+    <span>Carregando...</span>
+  </div>
+
   <!-- Página Inicial / Cadastro -->
-  <div id="start-screen" class="screen">
-    <div class="card">
-      <img src="https://cdn.shopify.com/s/files/1/0454/5845/6736/files/Logo-chumbada-OFICIAL-horizonatal-2_f758e5db-514c-4559-8549-94cd56f40ef7.png?v=1756759937" alt="Logo Chumbada Oficial" class="logo">
-      <h1>Jogo da Chumbada Oficial</h1>
-      <p>Entre no jogo adivinhando o nome correto da chumbada. Os 3 primeiros colocados do ranking no dia <strong>30/10/2025</strong> ganharão um prêmio exclusivo da Chumbada Oficial!</p>
-      <form id="player-form" autocomplete="off">
-        <div class="form-group">
-          <label for="player-name">Nome:</label>
-          <input type="text" id="player-name" name="player-name" required>
+  <div id="start-screen" class="screen hidden">
+    <div class="card glass elevate animate-pop">
+      <header class="start-header">
+        <img src="https://cdn.shopify.com/s/files/1/0454/5845/6736/files/Logo-chumbada-OFICIAL-horizonatal-2_f758e5db-514c-4559-8549-94cd56f40ef7.png?v=1756759937" alt="Logo Chumbada Oficial" class="logo">
+        <h2 class="title">Jogo da Chumbada Oficial</h2>
+        <p class="subtitle">Adivinhe o nome correto das chumbadas e suba no ranking!</p>
+      </header>
+
+      <form id="player-form" autocomplete="off" class="form glass-inner">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="player-name">Nome</label>
+            <input type="text" id="player-name" name="player-name" placeholder="Seu nome" required>
+          </div>
+          <div class="form-group">
+            <label for="player-email">E-mail</label>
+            <input type="email" id="player-email" name="player-email" placeholder="seu@email.com" required>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="player-email">E‑mail:</label>
-          <input type="email" id="player-email" name="player-email" required>
-        </div>
-        <button type="submit" class="primary-btn">Iniciar Jogo</button>
+        <button type="submit" class="primary-btn big">Iniciar Jogo</button>
       </form>
-      <!-- Container para exibir a tabela de ranking -->
-      <div id="start-ranking" class="ranking-container"></div>
+
+      <section class="ranking glass-inner">
+        <h3 class="section-title">Ranking (Top 10)</h3>
+        <div id="start-ranking" class="ranking-container"></div>
+      </section>
     </div>
   </div>
 
   <!-- Tela do Jogo -->
   <div id="game-screen" class="screen hidden">
-    <div class="card">
+    <div class="card glass elevate animate-pop">
       <header class="game-header">
         <div class="player-info">
-          <span id="player-display"></span>
-          <span id="score-display">Pontos: 0</span>
+          <span id="player-display" class="pill"></span>
+          <span id="score-display" class="pill strong">Pontos: 0</span>
         </div>
-        <div class="timer">
+        <div class="timer pill accent">
           Tempo: <span id="time-display">10</span>s <span id="question-counter" class="question-counter"></span>
         </div>
       </header>
+
       <main class="game-main">
-        <div id="image-container" class="image-container">
+        <div id="image-container" class="image-container glass-inner">
           <img id="chumbada-image" src="" alt="Chumbada" />
         </div>
+
         <div id="answer-buttons" class="answer-buttons"></div>
-        <!-- Mensagem de carregamento da imagem -->
         <div id="loading-message" class="loading-message hidden">Carregando imagem...</div>
+
         <div class="controls">
           <button id="hint-button" class="secondary-btn" disabled>Dica (50 pts)</button>
           <button id="power1" class="secondary-btn" disabled>Mar calmo<br><small>+30s (100 pts)</small></button>
@@ -64,12 +93,19 @@
 
   <!-- Tela de Fim de Jogo -->
   <div id="end-screen" class="screen hidden">
-    <div class="card">
-      <h2>Fim de Jogo!</h2>
-      <p id="final-score"></p>
+    <div class="card glass elevate animate-pop">
+      <h2 class="title">Fim de Jogo!</h2>
+      <p id="final-score" class="final-score"></p>
+      <div id="placement" class="placement-badge hidden"></div>
+      <div class="share-row">
+        <button id="share-whatsapp" class="secondary-btn">Compartilhar no WhatsApp</button>
+        <button id="share-copy" class="secondary-btn">Copiar link</button>
+      </div>
       <button id="play-again" class="primary-btn">Jogar novamente</button>
-      <!-- Container para exibir a tabela de ranking ao final do jogo -->
-      <div id="end-ranking" class="ranking-container"></div>
+      <section class="ranking glass-inner">
+        <h3 class="section-title">Ranking (Top 10)</h3>
+        <div id="end-ranking" class="ranking-container"></div>
+      </section>
     </div>
   </div>
 

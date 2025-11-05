@@ -1,16 +1,10 @@
 /*
- * Script para o Jogo da Chumbada Oficial
- * Implementa a lógica do jogo, incluindo a leitura das chumbadas, perguntas,
- * pontuação, dicas, poderes e ranking. Este código usa apenas JavaScript
- * vanilla para facilitar a integração com HTML e CSS.
+ * Lógica do jogo (com upgrades de UX/Animação/Mobile)
  */
 
-// Lista de chumbadas com seus nomes e imagens. As dicas são geradas
-// dinamicamente com base no nome (primeira e última letras) para dar
-// alguma orientação ao jogador quando ele desbloquear a opção de dica.
+// ===== Dados das chumbadas (mesmo conteúdo da versão anterior) =====
 const chumbadasData = [];
 (() => {
-  // Matriz contendo pares "nome: url" extraídos do arquivo fornecido.
   const raw = `Aero: https://cdn.shopify.com/s/files/1/0454/5845/6736/files/Aero.jpg?v=1762177242
 Âncora: https://cdn.shopify.com/s/files/1/0454/5845/6736/files/Ancora_99717180-0e5c-4c4a-aca8-d8adea66124e.jpg?v=1762177359
 Aquazoom: https://cdn.shopify.com/s/files/1/0454/5845/6736/files/Aquazoom_542d79e0-1a6c-4806-a8ae-2d83afa47b12.png?v=1762177531
@@ -84,7 +78,6 @@ Torpedo Long Casting: https://cdn.shopify.com/s/files/1/0454/5845/6736/files/azu
 Triângulo: https://cdn.shopify.com/s/files/1/0454/5845/6736/files/laranja-capa_1af03663-90f4-417a-9f56-a96976b24adf.jpg?v=1762181274
 Triângulo Capela: https://cdn.shopify.com/s/files/1/0454/5845/6736/files/natural-capa.jpg?v=1762181313
 Tronco de Cone: https://cdn.shopify.com/s/files/1/0454/5845/6736/files/verde-capa_4b93fe49-79eb-49a1-8912-2385fc869138.jpg?v=1762181324`;
-  // Parse each line into an object
   raw.split("\n").forEach((line) => {
     if (!line.includes(":")) return;
     const parts = line.split(":");
@@ -99,11 +92,10 @@ Tronco de Cone: https://cdn.shopify.com/s/files/1/0454/5845/6736/files/verde-cap
   });
 })();
 
-// Número de rodadas a serem jogadas em cada partida. Será selecionado um subconjunto
-// aleatório das chumbadas disponíveis.
+// ===== Config =====
 const GAME_ROUNDS = 30;
 
-// Variáveis de estado do jogo
+// ===== Estado =====
 let playerName = "";
 let playerEmail = "";
 let currentScore = 0;
@@ -115,25 +107,17 @@ let selectedChumbadas = [];
 let usedHint = false;
 const usedPowers = { power1: false, power2: false, power3: false, power4: false };
 let freezeTimeActive = false;
-// Contador de acertos para registrar quantas respostas corretas o jogador
-// conseguiu ao longo da partida. Esse valor será enviado para a planilha.
 let correctAnswersCount = 0;
-
-// Timestamp do início da partida em milissegundos. É usado para
-// calcular o tempo total de jogo, que será enviado como tempo_ms na planilha.
 let gameStartTimestamp = 0;
 
-// Endpoint do Apps Script responsável por gravar e listar o ranking.
-// Esta URL deve ser atualizada conforme a implantação do Apps Script.
+// ===== Endpoint do Apps Script =====
 const SCRIPT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwufIXS3Jw4-2bpUAeBVVvuKvkUvaYaVgivgjPCu870vcyFNaeK4x1_N5kZG8ekfZ7L/exec';
 
-// As constantes abaixo eram usadas em versões anteriores para consultar
-// diretamente a planilha via opensheet.elk.sh. Foram mantidas para
-// referência, mas não são usadas na abordagem atual de JSONP.
-// const SHEET_ID = '1pYUm3D4MemjLShWK5H1P6d3fCuwIwLPZpO4iUxg1OLY';
-// const SHEET_NAME = 'Pagina1';
+// ===== DOM =====
+const splash = document.getElementById("splash");
+const enterBtn = document.getElementById("enter-btn");
+const loader = document.getElementById("loader");
 
-// Elementos da DOM
 const startScreen = document.getElementById("start-screen");
 const gameScreen = document.getElementById("game-screen");
 const endScreen = document.getElementById("end-screen");
@@ -158,13 +142,14 @@ const powerButtons = {
 
 const endScoreEl = document.getElementById("final-score");
 const playAgainBtn = document.getElementById("play-again");
+const placementEl = document.getElementById('placement');
+const shareWaBtn = document.getElementById('share-whatsapp');
+const shareCopyBtn = document.getElementById('share-copy');
 const startRankingContainer = document.getElementById("start-ranking");
 const endRankingContainer = document.getElementById("end-ranking");
-
-// Exibe a contagem de perguntas (ex: 3/30) durante o jogo
 const questionCounterEl = document.getElementById("question-counter");
 
-// Função utilitária para embaralhar um array (Fisher-Yates)
+// ===== Util =====
 function shuffle(array) {
   const arr = array.slice();
   for (let i = arr.length - 1; i > 0; i--) {
@@ -173,83 +158,78 @@ function shuffle(array) {
   }
   return arr;
 }
+function show(el){ el.classList.remove("hidden"); }
+function hide(el){ el.classList.add("hidden"); }
+function showLoader(){ show(loader); }
+function hideLoader(){ hide(loader); }
 
-// Início do jogo após preenchimento do formulário
+// ===== Splash: entra para o start =====
+enterBtn.addEventListener("click", () => {
+  splash.classList.add("hidden");
+  show(startScreen);
+  fetchRanking(startRankingContainer);
+});
+
+// ===== Fluxo do jogo =====
 playerForm.addEventListener("submit", (e) => {
   e.preventDefault();
   playerName = document.getElementById("player-name").value.trim();
   playerEmail = document.getElementById("player-email").value.trim();
   if (!playerName || !playerEmail) return;
-  startScreen.classList.add("hidden");
-  gameScreen.classList.remove("hidden");
+  hide(startScreen);
+  show(gameScreen);
   resetGame();
   startGame();
 });
 
-// Clique para jogar novamente
 playAgainBtn.addEventListener("click", () => {
-  endScreen.classList.add("hidden");
-  startScreen.classList.remove("hidden");
-  // Carregar ranking novamente na tela inicial
+  hide(endScreen);
+  show(startScreen);
   fetchRanking(startRankingContainer);
 });
 
-// Função para resetar os estados do jogo
 function resetGame() {
   currentScore = 0;
   currentIndex = 0;
   usedHint = false;
   freezeTimeActive = false;
-  usedPowers.power1 = false;
-  usedPowers.power2 = false;
-  usedPowers.power3 = false;
-  usedPowers.power4 = false;
+  usedPowers.power1 = usedPowers.power2 = usedPowers.power3 = usedPowers.power4 = false;
   playerDisplay.textContent = playerName;
   scoreDisplay.textContent = `Pontos: ${currentScore}`;
   hintTextEl.textContent = "";
-  // Reinicia o contador de acertos
   correctAnswersCount = 0;
-  // Selecionar 30 chumbadas aleatórias
   const shuffled = shuffle(chumbadasData);
   selectedChumbadas = shuffled.slice(0, GAME_ROUNDS);
 }
 
-// Função para iniciar a partida
 function startGame() {
-  // Carregar ranking na tela inicial durante o jogo
   fetchRanking(startRankingContainer);
-  // Armazenar momento de início da partida para calcular duração
   gameStartTimestamp = Date.now();
   showQuestion();
 }
 
-// Função para mostrar a pergunta atual
 function showQuestion() {
-  // Limpa textos e conteúdos anteriores
   hintTextEl.textContent = "";
   answerButtonsEl.innerHTML = "";
-  // Se esgotou as rodadas, terminar
-  if (currentIndex >= selectedChumbadas.length) {
-    return endGame();
-  }
+  if (currentIndex >= selectedChumbadas.length) return endGame();
+
   const current = selectedChumbadas[currentIndex];
-  // Preparar opções de respostas (1 correta + 3 aleatórias)
   const wrongChoices = shuffle(chumbadasData.filter((c) => c.name !== current.name)).slice(0, 3);
   const options = shuffle([current, ...wrongChoices]);
-  // Mostrar mensagem de carregamento enquanto a imagem não terminar de carregar
+
+  // Ativa loader durante pré-carregamento
+  showLoader();
   if (loadingMessageEl) loadingMessageEl.classList.remove('hidden');
-  // Ocultar botões de resposta e controles e temporizador durante o carregamento
   answerButtonsEl.classList.add('hidden');
-  if (controlsContainer) controlsContainer.classList.add('hidden');
-  if (timerContainer) timerContainer.style.visibility = 'hidden';
-  // Pré-carregar imagem
+  controlsContainer.classList.add('hidden');
+  timerContainer.style.visibility = 'hidden';
+
   const preImg = new Image();
   preImg.onload = () => {
-    // Definir imagem final no elemento e remover mensagem de carregamento
     imageEl.src = preImg.src;
     imageEl.alt = current.name;
-    if (loadingMessageEl) loadingMessageEl.classList.add('hidden');
-    // Gerar botões de resposta
+
+    // Render botões com animação
     options.forEach((option) => {
       const btn = document.createElement('button');
       btn.textContent = option.name;
@@ -257,27 +237,29 @@ function showQuestion() {
       btn.addEventListener('click', handleAnswer);
       answerButtonsEl.appendChild(btn);
     });
-    // Exibir botões e controles
+
+    // Exibe áreas
+    hideLoader();
+    if (loadingMessageEl) loadingMessageEl.classList.add('hidden');
     answerButtonsEl.classList.remove('hidden');
-    if (controlsContainer) controlsContainer.classList.remove('hidden');
-    if (timerContainer) timerContainer.style.visibility = 'visible';
-    // Habilitar/desabilitar dica
+    controlsContainer.classList.remove('hidden');
+    timerContainer.style.visibility = 'visible';
+
     hintButton.disabled = !(currentScore >= 50 && !usedHint);
-    // Atualizar estado dos poderes
     updatePowerButtons();
-    // Configurar eventos para poderes
+
     powerButtons.power1.onclick = () => usePower(1);
     powerButtons.power2.onclick = () => usePower(2);
     powerButtons.power3.onclick = () => usePower(3);
     powerButtons.power4.onclick = () => usePower(4);
-    // Configurar botão de dica
     hintButton.onclick = () => {
       if (usedHint || currentScore < 50) return;
       hintTextEl.textContent = current.hint;
       usedHint = true;
       hintButton.disabled = true;
     };
-    // Iniciar temporizador
+
+    // Timer
     maxTime = 10;
     currentTime = maxTime;
     freezeTimeActive = false;
@@ -293,7 +275,7 @@ function showQuestion() {
         }
       }
     }, 1000);
-    // Atualizar contador de perguntas
+
     if (questionCounterEl) {
       questionCounterEl.textContent = `${currentIndex + 1}/${selectedChumbadas.length}`;
     }
@@ -301,144 +283,87 @@ function showQuestion() {
   preImg.src = current.image;
 }
 
-// Atualiza a exibição do tempo
 function updateTimeDisplay() {
   timeDisplay.textContent = freezeTimeActive ? "∞" : Math.max(0, Math.ceil(currentTime));
 }
 
-// Lógica quando o tempo acaba
 function timeUp() {
-  // Penalizar ponto
-  currentScore -= 1;
-  if (currentScore < 0) currentScore = 0;
+  currentScore = Math.max(0, currentScore - 1);
   scoreDisplay.textContent = `Pontos: ${currentScore}`;
-  // Destacar a resposta correta
   Array.from(answerButtonsEl.children).forEach((btn) => {
-    if (btn.dataset.correct === "true") {
-      btn.classList.add("correct");
-    }
+    if (btn.dataset.correct === "true") btn.classList.add("correct");
     btn.disabled = true;
   });
-  // Passar para a próxima pergunta após breve intervalo
-  setTimeout(() => {
-    currentIndex++;
-    showQuestion();
-  }, 1000);
+  setTimeout(() => { currentIndex++; showQuestion(); }, 700);
 }
 
-// Função de tratamento de clique de resposta
 function handleAnswer(e) {
   const btn = e.target;
-  // Evitar múltiplos cliques
   if (btn.disabled) return;
-  // Parar temporizador
   clearInterval(timerInterval);
-  // Recuperar se é a resposta correta
   const isCorrect = btn.dataset.correct === "true";
-  // Calcular pontos
-  let timePoints = freezeTimeActive ? 10 : Math.max(0, Math.ceil(currentTime));
+  const timePoints = freezeTimeActive ? 10 : Math.max(0, Math.ceil(currentTime));
   if (isCorrect) {
     currentScore += 10 + timePoints;
-    btn.classList.add("correct");
-    // Incrementa número de acertos
     correctAnswersCount++;
+    btn.classList.add("correct");
   } else {
-    currentScore -= 1;
-    if (currentScore < 0) currentScore = 0;
+    currentScore = Math.max(0, currentScore - 1);
     btn.classList.add("wrong");
   }
   scoreDisplay.textContent = `Pontos: ${currentScore}`;
-  // Destacar a resposta correta e desabilitar botões
   Array.from(answerButtonsEl.children).forEach((b) => {
     b.disabled = true;
-    if (b.dataset.correct === "true") {
-      b.classList.add("correct");
-    }
+    if (b.dataset.correct === "true") b.classList.add("correct");
   });
-  // Após pequeno intervalo, passar para próxima pergunta
-  setTimeout(() => {
-    currentIndex++;
-    showQuestion();
-  }, 1000);
+  setTimeout(() => { currentIndex++; showQuestion(); }, 600);
 }
 
-// Atualiza o estado dos botões de poder conforme a pontuação
 function updatePowerButtons() {
-  // Mar calmo: +30s a partir de 100 pontos
   powerButtons.power1.disabled = !(currentScore >= 100 && !usedPowers.power1);
-  // Pesca tranquila: parar tempo a partir de 150 pontos
   powerButtons.power2.disabled = !(currentScore >= 150 && !usedPowers.power2);
-  // Tem peixe na linha: elimina 2 respostas erradas a partir de 200 pontos
   powerButtons.power3.disabled = !(currentScore >= 200 && !usedPowers.power3);
-  // Pescaria oficial: mostra resposta correta a partir de 250 pontos
   powerButtons.power4.disabled = !(currentScore >= 250 && !usedPowers.power4);
 }
 
-// Ação dos poderes
 function usePower(number) {
-  const currentQuestion = selectedChumbadas[currentIndex];
   switch (number) {
-    case 1: // Mar calmo: adicionar 30s
+    case 1:
       if (usedPowers.power1 || currentScore < 100) return;
-      maxTime += 30;
-      currentTime += 30;
-      usedPowers.power1 = true;
-      updatePowerButtons();
-      updateTimeDisplay();
-      break;
-    case 2: // Pesca tranquila: parar temporizador
+      maxTime += 30; currentTime += 30; usedPowers.power1 = true; updatePowerButtons(); updateTimeDisplay(); break;
+    case 2:
       if (usedPowers.power2 || currentScore < 150) return;
-      usedPowers.power2 = true;
-      freezeTimeActive = true;
-      updatePowerButtons();
-      updateTimeDisplay();
-      break;
-    case 3: // Tem peixe na linha: eliminar 2 opções erradas
+      usedPowers.power2 = true; freezeTimeActive = true; updatePowerButtons(); updateTimeDisplay(); break;
+    case 3:
       if (usedPowers.power3 || currentScore < 200) return;
-      usedPowers.power3 = true;
-      updatePowerButtons();
-      // Encontrar botões errados
+      usedPowers.power3 = true; updatePowerButtons();
       const wrongBtns = Array.from(answerButtonsEl.children).filter((btn) => btn.dataset.correct !== "true" && !btn.disabled);
-      shuffle(wrongBtns).slice(0, 2).forEach((btn) => {
-        btn.disabled = true;
-        btn.style.visibility = "hidden";
-      });
+      shuffle(wrongBtns).slice(0, 2).forEach((btn) => { btn.disabled = true; btn.style.visibility = "hidden"; });
       break;
-    case 4: // Pescaria oficial: mostrar resposta correta
+    case 4:
       if (usedPowers.power4 || currentScore < 250) return;
-      usedPowers.power4 = true;
-      updatePowerButtons();
-      Array.from(answerButtonsEl.children).forEach((btn) => {
-        if (btn.dataset.correct === "true") {
-          btn.classList.add("correct");
-        }
-      });
+      usedPowers.power4 = true; updatePowerButtons();
+      Array.from(answerButtonsEl.children).forEach((btn) => { if (btn.dataset.correct === "true") btn.classList.add("correct"); });
       break;
   }
 }
 
-// Função para encerrar o jogo
 function endGame() {
-  // Limpar temporizador
   if (timerInterval) clearInterval(timerInterval);
-  gameScreen.classList.add("hidden");
-  endScreen.classList.remove("hidden");
+  hide(gameScreen);
+  show(endScreen);
   endScoreEl.textContent = `Você fez ${currentScore} pontos!`;
-  // Enviar pontuação para planilha (dependendo da configuração)
-  // Calcula o tempo total de jogo em milissegundos
   const tempoTotalMs = Date.now() - gameStartTimestamp;
   postScore(playerName, playerEmail, currentScore, correctAnswersCount, tempoTotalMs);
-  // Carregar ranking de fim de jogo
   fetchRanking(endRankingContainer);
 }
 
-// Busca e exibe o ranking usando JSONP a partir do Apps Script. Esta
-// função gera dinamicamente um callback e injeta um <script> para
-// contornar a política de CORS. A tabela é construída sem a coluna
-// de data para atender à solicitação do usuário.
+// ===== Ranking =====
 function fetchRanking(container) {
   if (!container) return;
-  container.innerHTML = '<p>Carregando ranking...</p>';
+  container.innerHTML = '<div class="ranking-head"><div class="r-head-title">Ranking • Top 10</div><div class="r-head-sub">Melhores pontuações</div></div><div class="ranking-list"></div>';
+  const listEl = container.querySelector('.ranking-list');
+
   const callbackName = 'rankingCb_' + Math.random().toString(36).substring(2);
   window[callbackName] = function(data) {
     try {
@@ -447,14 +372,26 @@ function fetchRanking(container) {
         const bScore = parseFloat(b.score || b.Score || b.Pontos || 0);
         return bScore - aScore;
       });
-      let html = '<table class="ranking-table"><tr><th>Posição</th><th>Nome</th><th>Pontos</th></tr>';
+
+      listEl.innerHTML = '';
       ranking.slice(0, 10).forEach((row, index) => {
-        const nome = row.nome || row['nome '] || row.Nome || row['Nome '] || '';
-        const pontos = row.score || row.Score || row.Pontos || '';
-        html += `<tr><td>${index + 1}</td><td>${nome}</td><td>${pontos}</td></tr>`;
+        const pos = index + 1;
+        const nome = row.nome || row['nome '] || row.Nome || row['Nome '] || '—';
+        const pontos = row.score || row.Score || row.Pontos || 0;
+        const card = document.createElement('div');
+        card.className = 'ranking-row' + (pos === 1 ? ' top1' : pos === 2 ? ' top2' : pos === 3 ? ' top3' : '');
+        card.innerHTML = `
+          <div class="pos">#${pos}</div>
+          <div class="name">${nome}</div>
+          <div class="pts">${pontos}</div>
+        `;
+        listEl.appendChild(card);
       });
-      html += '</table>';
-      container.innerHTML = html;
+
+      // Se não houver resultados
+      if (!listEl.children.length) {
+        listEl.innerHTML = '<div class="ranking-empty">Sem dados ainda. Jogue para entrar no ranking!</div>';
+      }
     } catch (err) {
       container.innerHTML = '<p>Não foi possível carregar o ranking no momento.</p>';
     } finally {
@@ -472,30 +409,34 @@ function fetchRanking(container) {
   document.body.appendChild(scriptEl);
 }
 
-// Envia a pontuação do jogador para o servidor usando uma requisição GET.
-// Esta abordagem evita a necessidade de pré-voo CORS, pois o Apps Script
-// tratará os parâmetros na URL. A função cria um objeto de query
-// (URLSearchParams) contendo nome, email, score e data. Como a
-// requisição usa `mode: no-cors`, o retorno não é analisado; apenas
-// enviamos os dados para o servidor.
+// ===== Enviar pontuação =====
 function postScore(name, email, points, acertos, tempoMs) {
-  if (!SCRIPT_ENDPOINT) {
-    console.log('Salvamento de pontuação não configurado.');
-    return;
-  }
-  // Monta os parâmetros conforme os cabeçalhos da planilha. Inclui o número
-  // de acertos (acertos) e o tempo total em milissegundos (tempo_ms).
-  const params = new URLSearchParams({
-    nome: name,
-    email: email,
-    acertos: acertos || 0,
-    tempo_ms: tempoMs || '',
-    score: points
-  });
-  // Usa fetch com método GET e modo no-cors para evitar preflight
-  fetch(`${SCRIPT_ENDPOINT}?${params.toString()}`, { mode: 'no-cors' })
-    .catch(err => console.error('Erro ao enviar pontuação:', err));
+  if (!SCRIPT_ENDPOINT) return;
+  const params = new URLSearchParams({ nome: name, email: email, acertos: acertos || 0, tempo_ms: tempoMs || '', score: points });
+  fetch(`${SCRIPT_ENDPOINT}?${params.toString()}`, { mode: 'no-cors' }).catch(()=>{});
 }
 
-// Carregar ranking inicial na página de boas-vindas
-fetchRanking(startRankingContainer);
+// Pré-carrega ranking no primeiro paint do start quando abrir via splash
+// (o splash chama fetch quando o usuário entra)
+
+
+// ===== Compartilhar resultado =====
+function buildShareMessage(posLabel){
+  const base = `Acertei ${correctAnswersCount} e fiz ${currentScore} pontos no Jogo da Chumbada! ${posLabel ? 'Fiquei em ' + posLabel + ' no ranking!' : ''}`;
+  const url = window.location.href.split('#')[0];
+  return `${base} ${url}`;
+}
+if (shareWaBtn) {
+  shareWaBtn.onclick = () => {
+    const label = placementEl && !placementEl.classList.contains('hidden') ? placementEl.textContent : '';
+    const text = encodeURIComponent(buildShareMessage(label));
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  };
+}
+if (shareCopyBtn) {
+  shareCopyBtn.onclick = async () => {
+    const label = placementEl && !placementEl.classList.contains('hidden') ? placementEl.textContent : '';
+    const text = buildShareMessage(label);
+    try { await navigator.clipboard.writeText(text); shareCopyBtn.textContent='Copiado!'; setTimeout(()=>shareCopyBtn.textContent='Copiar link',1800); } catch(e){ alert('Não foi possível copiar.'); }
+  };
+}
