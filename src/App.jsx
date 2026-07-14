@@ -337,7 +337,7 @@ function App() {
         
         <div className="lure-image-container">
           <img 
-            src={`images/${currentQ.correct.image.replace('assets/images/', '')}`} 
+            src={currentQ.correct.image} 
             alt="Qual é a chumbada?" 
             className="lure-image" 
           />
