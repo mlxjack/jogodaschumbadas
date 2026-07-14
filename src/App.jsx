@@ -34,7 +34,7 @@ function App() {
   const timerRef = useRef(null);
 
   useEffect(() => {
-    fetch('lures_data.json')
+    fetch('chumbadas_data.json')
       .then(res => res.json())
       .then(data => {
         setLures(data);
@@ -267,7 +267,7 @@ function App() {
   const renderLogin = () => (
     <div className="card">
       <img src="images/CHUMBADA-OFICIAL.png" alt="Chumbada Oficial" className="logo" />
-      <h2>Desafio das Iscas</h2>
+      <h2>Desafio das Chumbadas</h2>
       <p style={{marginBottom: '2rem', color: '#a1a1aa', marginTop: '10px'}}>
         Mostre que você conhece o arsenal da Chumbada Oficial.
       </p>
@@ -330,7 +330,7 @@ function App() {
     return (
       <div className="card">
         <div className="game-stats">
-          <div>Isca <span className="highlight">{currentIndex + 1}</span> / {TOTAL_QUESTIONS}</div>
+          <div>Chumbada <span className="highlight">{currentIndex + 1}</span> / {TOTAL_QUESTIONS}</div>
           <div>Tempo: <span className="highlight" style={{color: timeLeft <= 3 ? '#ef4444' : 'var(--orange)'}}>{timeLeft}s</span></div>
           <div>Pontos: <span className="highlight">{score}</span></div>
         </div>
@@ -338,7 +338,7 @@ function App() {
         <div className="lure-image-container">
           <img 
             src={`images/${currentQ.correct.image.replace('assets/images/', '')}`} 
-            alt="Qual é a isca?" 
+            alt="Qual é a chumbada?" 
             className="lure-image" 
           />
         </div>
@@ -406,7 +406,7 @@ function App() {
         <h2>Ranking Oficial</h2>
         
         <div className="prize-notice">
-          🏆 O 1º colocado no ranking oficial ganhará um Kit de Iscas da sua escolha!*
+          🏆 O 1º colocado no ranking oficial ganhará um Kit de Chumbadas da sua escolha!*
           <div style={{fontSize: '0.75rem', margin: '6px 0'}}>*De acordo com a disponibilidade em estoque.</div>
         </div>
         
