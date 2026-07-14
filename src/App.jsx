@@ -139,7 +139,7 @@ function App() {
     if (db) {
       // Firebase Logic
       try {
-        const rankingRef = collection(db, "ranking");
+        const rankingRef = collection(db, "ranking_chumbadas");
         const q = query(rankingRef, where("email", "==", playerEmail.toLowerCase()));
         const querySnapshot = await getDocs(q);
         
@@ -150,7 +150,7 @@ function App() {
           const userData = userDoc.data();
           
           if (finalScore > userData.score) {
-            await updateDoc(doc(db, "ranking", userDoc.id), {
+            await updateDoc(doc(db, "ranking_chumbadas", userDoc.id), {
               score: finalScore,
               name: playerName,
               phone: playerPhone,
@@ -219,7 +219,7 @@ function App() {
     setGameState('leaderboard');
     if (db) {
       try {
-        const rankingRef = collection(db, "ranking");
+        const rankingRef = collection(db, "ranking_chumbadas");
         const querySnapshot = await getDocs(rankingRef);
         const lbData = [];
         querySnapshot.forEach((doc) => {
