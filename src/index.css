@@ -449,3 +449,16 @@ h1 span {
   opacity: 0.4;
   letter-spacing: 0.05em;
 }
+
+.lb-player-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.lb-plays {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  margin-top: 2px;
+}

@@ -50,16 +50,36 @@ function App() {
     e.preventDefault();
     if (!playerName.trim() || !playerEmail.trim() || !playerPhone.trim()) return;
     
-    // Pick 15 random lures for questions
+    // Pick 15 random lures (deduplicated by name to prevent repeats) for questions
     let shuffledLures = [...lures].sort(() => 0.5 - Math.random());
-    let selectedLures = shuffledLures.slice(0, TOTAL_QUESTIONS);
+    
+    let uniqueModelLures = [];
+    let seenNames = new Set();
+    for (let lure of shuffledLures) {
+      if (!seenNames.has(lure.name)) {
+        seenNames.add(lure.name);
+        uniqueModelLures.push(lure);
+      }
+    }
+    
+    let selectedLures = uniqueModelLures.slice(0, TOTAL_QUESTIONS);
     
     // Generate options for each question
     let generatedQuestions = selectedLures.map(correctLure => {
-      let wrongLures = shuffledLures.filter(l => l.name !== correctLure.name);
-      wrongLures = wrongLures.sort(() => 0.5 - Math.random()).slice(0, OPTIONS_COUNT - 1);
+      let possibleWrongs = shuffledLures.filter(l => l.name !== correctLure.name);
       
-      let options = [correctLure, ...wrongLures].sort(() => 0.5 - Math.random());
+      // Deduplicate wrong options by name
+      let uniqueWrongs = [];
+      let seenWrongNames = new Set();
+      for (let l of possibleWrongs) {
+        if (!seenWrongNames.has(l.name)) {
+          seenWrongNames.add(l.name);
+          uniqueWrongs.push(l);
+        }
+      }
+      
+      let wrongChoices = uniqueWrongs.sort(() => 0.5 - Math.random()).slice(0, OPTIONS_COUNT - 1);
+      let options = [correctLure, ...wrongChoices].sort(() => 0.5 - Math.random());
       
       return {
         correct: correctLure,
@@ -171,16 +191,21 @@ function App() {
           setIsFirstTime(false);
           const userDoc = querySnapshot.docs[0];
           const userData = userDoc.data();
+          const currentPlays = (userData.plays || 1) + 1;
           
           if (finalScore > userData.score) {
             await updateDoc(doc(db, "ranking_chumbadas", userDoc.id), {
               score: finalScore,
               name: playerName,
               phone: playerPhone,
-              date: dateStr
+              date: dateStr,
+              plays: currentPlays
             });
             setIsNewRecord(true);
           } else {
+            await updateDoc(doc(db, "ranking_chumbadas", userDoc.id), {
+              plays: currentPlays
+            });
             setIsNewRecord(false);
           }
         } else {
@@ -192,11 +217,12 @@ function App() {
             email: playerEmail.toLowerCase(),
             phone: playerPhone,
             score: finalScore,
-            date: dateStr
+            date: dateStr,
+            plays: 1
           });
         }
       } catch (error) {
-        console.error("Erro ao salvar no Firebase: ", error);
+        print("Erro ao salvar no Firebase: ", error);
         alert("Erro ao conectar no banco de dados. Salvando localmente como fallback.");
         fallbackSaveLocal(finalScore);
       }
@@ -213,6 +239,9 @@ function App() {
     
     if (existingIndex >= 0) {
       setIsFirstTime(false);
+      const currentPlays = (currentLeaderboard[existingIndex].plays || 1) + 1;
+      currentLeaderboard[existingIndex].plays = currentPlays;
+      
       if (finalScore > currentLeaderboard[existingIndex].score) {
         currentLeaderboard[existingIndex].score = finalScore;
         currentLeaderboard[existingIndex].name = playerName;
@@ -230,7 +259,8 @@ function App() {
         email: playerEmail.toLowerCase(),
         phone: playerPhone,
         score: finalScore, 
-        date: new Date().toISOString() 
+        date: new Date().toISOString(),
+        plays: 1
       });
     }
     
@@ -446,7 +476,10 @@ function App() {
             {leaderboardData.map((item, i) => (
               <li key={i} className="leaderboard-item">
                 <span className="rank">#{i + 1}</span>
-                <span className="lb-name">{item.name}</span>
+                <div className="lb-player-info">
+                  <span className="lb-name">{item.name}</span>
+                  <span className="lb-plays">{item.plays || 1} { (item.plays || 1) === 1 ? 'tentativa' : 'tentativas' }</span>
+                </div>
                 <span className="lb-score">{item.score} pts</span>
               </li>
             ))}
@@ -483,7 +516,7 @@ function App() {
       {gameState === 'leaderboard' && renderLeaderboard()}
 
       <footer className="game-footer">
-        v1.2.1
+        v1.3.0
       </footer>
     </div>
   );

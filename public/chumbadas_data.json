@@ -348,38 +348,6 @@
         "image": "assets/images/chumbada-jet-pack-natural.png"
     },
     {
-        "name": "Chumbada Jig Head Esferica",
-        "image": "assets/images/chumbada-jig-head-esferica-60-natural-anzois-maiores.png"
-    },
-    {
-        "name": "Chumbada Jig Head Esferica",
-        "image": "assets/images/chumbada-jig-head-esferica-natural-anzois-maiores.png"
-    },
-    {
-        "name": "Chumbada Jig Head Esferica",
-        "image": "assets/images/chumbada-jig-head-esferica-natural-anzois-menores.png"
-    },
-    {
-        "name": "Chumbada Jig Head Facetada",
-        "image": "assets/images/chumbada-jig-head-facetada-60-natural-anzois-maiores.png"
-    },
-    {
-        "name": "Chumbada Jig Head Facetada",
-        "image": "assets/images/chumbada-jig-head-facetada-natural-anzois-menores.png"
-    },
-    {
-        "name": "Chumbada Jig Head Offset Articulada Football",
-        "image": "assets/images/chumbada-jig-head-offset-articulada-football-natural.png"
-    },
-    {
-        "name": "Chumbada Jig Head Offset Articulado Esferico Ewg",
-        "image": "assets/images/chumbada-jig-head-offset-articulado-esferico-ewg-natural.png"
-    },
-    {
-        "name": "Chumbada Jig Head Offset Bananinha",
-        "image": "assets/images/chumbada-jig-head-offset-bananinha-natural.png"
-    },
-    {
         "name": "Chumbada Lanca Concava",
         "image": "assets/images/chumbada-lanca-concava-natural-haste.png"
     },
@@ -738,34 +706,6 @@
     {
         "name": "Chumbada Tronco De Cone",
         "image": "assets/images/chumbada-tronco-de-cone-natural.jpg"
-    },
-    {
-        "name": "Jig De Olho",
-        "image": "assets/images/jig-de-olho.jpg"
-    },
-    {
-        "name": "Jig De Olho",
-        "image": "assets/images/jig-de-olho.png"
-    },
-    {
-        "name": "Jig Head Offset",
-        "image": "assets/images/jig-head-offset-60-graus-com-mola-sapatinho-natural.png"
-    },
-    {
-        "name": "Jig Head Offset Articulado Bullet Ewg",
-        "image": "assets/images/jig-head-offset-articulado-bullet-ewg-natural.png"
-    },
-    {
-        "name": "Jig Head Offset Articulado Cafe Ewg",
-        "image": "assets/images/jig-head-offset-articulado-cafe-ewg-natural.png"
-    },
-    {
-        "name": "Jig Head Offset Esferico Ewg",
-        "image": "assets/images/jig-head-offset-esferico-ewg-natural-maior.png"
-    },
-    {
-        "name": "Jig Head Offset Esferico Ewg",
-        "image": "assets/images/jig-head-offset-esferico-ewg-natural-menor.png"
     },
     {
         "name": "Lastro Para Mergulho",
