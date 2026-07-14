@@ -465,8 +465,9 @@ function App() {
         <h2>Ranking Oficial</h2>
         
         <div className="prize-notice">
-          🏆 O 1º colocado no ranking oficial ganhará um Kit de Chumbadas da sua escolha!*
-          <div style={{fontSize: '0.75rem', margin: '6px 0'}}>*De acordo com a disponibilidade em estoque.</div>
+          🏆 O 1º colocado no ranking ganhará 4 chumbadas da sua escolha!*
+          <div style={{fontSize: '0.85rem', marginTop: '6px', fontWeight: 'bold', color: '#34d399'}}>Premiação no dia 24/07!</div>
+          <div style={{fontSize: '0.75rem', marginTop: '6px', color: '#94a3b8'}}>*De acordo com a disponibilidade em estoque.</div>
         </div>
         
         {leaderboardData.length === 0 ? (
@@ -516,7 +517,7 @@ function App() {
       {gameState === 'leaderboard' && renderLeaderboard()}
 
       <footer className="game-footer">
-        v1.4.0
+        v1.4.1
       </footer>
     </div>
   );
