@@ -481,6 +481,10 @@ function App() {
       {gameState === 'playing' && renderPlaying()}
       {gameState === 'gameover' && renderGameOver()}
       {gameState === 'leaderboard' && renderLeaderboard()}
+
+      <footer className="game-footer">
+        v1.2.0
+      </footer>
     </div>
   );
 }
