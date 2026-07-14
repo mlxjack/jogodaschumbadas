@@ -182,7 +182,7 @@ function App() {
     if (db) {
       // Firebase Logic
       try {
-        const rankingRef = collection(db, "ranking_chumbadas");
+        const rankingRef = collection(db, "ranking_chumbadas_oficial");
         const q = query(rankingRef, where("email", "==", playerEmail.toLowerCase()));
         const querySnapshot = await getDocs(q);
         
@@ -194,7 +194,7 @@ function App() {
           const currentPlays = (userData.plays || 1) + 1;
           
           if (finalScore > userData.score) {
-            await updateDoc(doc(db, "ranking_chumbadas", userDoc.id), {
+            await updateDoc(doc(db, "ranking_chumbadas_oficial", userDoc.id), {
               score: finalScore,
               name: playerName,
               phone: playerPhone,
@@ -203,7 +203,7 @@ function App() {
             });
             setIsNewRecord(true);
           } else {
-            await updateDoc(doc(db, "ranking_chumbadas", userDoc.id), {
+            await updateDoc(doc(db, "ranking_chumbadas_oficial", userDoc.id), {
               plays: currentPlays
             });
             setIsNewRecord(false);
@@ -234,7 +234,7 @@ function App() {
   };
 
   const fallbackSaveLocal = (finalScore) => {
-    const currentLeaderboard = JSON.parse(localStorage.getItem('chumbada_leaderboard') || '[]');
+    const currentLeaderboard = JSON.parse(localStorage.getItem('chumbada_leaderboard_oficial') || '[]');
     const existingIndex = currentLeaderboard.findIndex(p => p.email.toLowerCase() === playerEmail.toLowerCase());
     
     if (existingIndex >= 0) {
@@ -265,14 +265,14 @@ function App() {
     }
     
     currentLeaderboard.sort((a, b) => b.score - a.score);
-    localStorage.setItem('chumbada_leaderboard', JSON.stringify(currentLeaderboard));
+    localStorage.setItem('chumbada_leaderboard_oficial', JSON.stringify(currentLeaderboard));
   };
 
   const loadLeaderboard = async () => {
     setGameState('leaderboard');
     if (db) {
       try {
-        const rankingRef = collection(db, "ranking_chumbadas");
+        const rankingRef = collection(db, "ranking_chumbadas_oficial");
         const querySnapshot = await getDocs(rankingRef);
         const lbData = [];
         querySnapshot.forEach((doc) => {
@@ -282,10 +282,10 @@ function App() {
         setLeaderboardData(lbData.slice(0, 10)); // Top 10
       } catch (error) {
         console.error("Erro ao carregar ranking do Firebase", error);
-        setLeaderboardData(JSON.parse(localStorage.getItem('chumbada_leaderboard') || '[]').slice(0, 10));
+        setLeaderboardData(JSON.parse(localStorage.getItem('chumbada_leaderboard_oficial') || '[]').slice(0, 10));
       }
     } else {
-      setLeaderboardData(JSON.parse(localStorage.getItem('chumbada_leaderboard') || '[]').slice(0, 10));
+      setLeaderboardData(JSON.parse(localStorage.getItem('chumbada_leaderboard_oficial') || '[]').slice(0, 10));
     }
   };
 
@@ -306,7 +306,7 @@ function App() {
     if (db) {
       alert("Com o Firebase ativo, o ideal é ver todos os e-mails e contatos diretamente no painel do Firebase Console (Firestore) de forma mais segura. Baixando fallback local apenas como backup...");
     }
-    const localData = localStorage.getItem('chumbada_leaderboard') || '[]';
+    const localData = localStorage.getItem('chumbada_leaderboard_oficial') || '[]';
     
     const blob = new Blob([localData], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -516,7 +516,7 @@ function App() {
       {gameState === 'leaderboard' && renderLeaderboard()}
 
       <footer className="game-footer">
-        v1.3.0
+        v1.4.0
       </footer>
     </div>
   );
