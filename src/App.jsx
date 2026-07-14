@@ -353,7 +353,7 @@ function App() {
     return (
       <div className="card">
         {scoreAnimation && (
-          <div className={`score-animation-overlay ${scoreAnimation.step}`}>
+          <div key={scoreAnimation.step} className={`score-animation-overlay ${scoreAnimation.step}`}>
             <div className="score-animation-amount">+{scoreAnimation.amount}</div>
             <div className="score-animation-label">{scoreAnimation.step === 'base' ? 'ACERTO!' : 'BÔNUS TEMPO!'}</div>
           </div>
@@ -483,7 +483,7 @@ function App() {
       {gameState === 'leaderboard' && renderLeaderboard()}
 
       <footer className="game-footer">
-        v1.2.0
+        v1.2.1
       </footer>
     </div>
   );
