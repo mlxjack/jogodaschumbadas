@@ -24,6 +24,7 @@ function App() {
   const [timeLeft, setTimeLeft] = useState(TIME_PER_QUESTION);
   const [selectedOption, setSelectedOption] = useState(null);
   const [isAnswerRevealed, setIsAnswerRevealed] = useState(false);
+  const [scoreAnimation, setScoreAnimation] = useState(null);
   
   // End Game State
   const [isNewRecord, setIsNewRecord] = useState(false);
@@ -108,14 +109,36 @@ function App() {
     setIsAnswerRevealed(true);
     
     const currentQ = questions[currentIndex];
-    if (option.name === currentQ.correct.name) {
-      // Calculate score: 100 base + 10 per remaining second
-      setScore(prev => prev + 100 + (timeLeft * 10));
-    }
+    const isCorrect = option.name === currentQ.correct.name;
     
-    setTimeout(() => {
-      nextQuestion();
-    }, 2000);
+    if (isCorrect) {
+      const basePoints = 100;
+      const bonusPoints = timeLeft * 10;
+      
+      // Step 1: Base points animation
+      setScoreAnimation({ step: 'base', amount: basePoints });
+      setScore(prev => prev + basePoints);
+      
+      // Step 2: Time bonus animation after 900ms
+      setTimeout(() => {
+        if (bonusPoints > 0) {
+          setScoreAnimation({ step: 'bonus', amount: bonusPoints });
+          setScore(prev => prev + bonusPoints);
+        } else {
+          setScoreAnimation(null);
+        }
+      }, 900);
+      
+      // Step 3: Transition to next question after 1800ms
+      setTimeout(() => {
+        setScoreAnimation(null);
+        nextQuestion();
+      }, 1800);
+    } else {
+      setTimeout(() => {
+        nextQuestion();
+      }, 2000);
+    }
   };
 
   const nextQuestion = () => {
@@ -315,7 +338,7 @@ function App() {
       </form>
       <button 
         className="btn-secondary" 
-        style={{marginTop: '1rem', background: 'transparent', borderColor: 'transparent', color: 'var(--orange)'}} 
+        style={{marginTop: '1rem', background: 'transparent', borderColor: 'transparent', color: 'var(--cyan)'}} 
         onClick={loadLeaderboard}
       >
         Ver Ranking Atual
@@ -329,9 +352,15 @@ function App() {
     
     return (
       <div className="card">
+        {scoreAnimation && (
+          <div className={`score-animation-overlay ${scoreAnimation.step}`}>
+            <div className="score-animation-amount">+{scoreAnimation.amount}</div>
+            <div className="score-animation-label">{scoreAnimation.step === 'base' ? 'ACERTO!' : 'BÔNUS TEMPO!'}</div>
+          </div>
+        )}
         <div className="game-stats">
           <div>Chumbada <span className="highlight">{currentIndex + 1}</span> / {TOTAL_QUESTIONS}</div>
-          <div>Tempo: <span className="highlight" style={{color: timeLeft <= 3 ? '#ef4444' : 'var(--orange)'}}>{timeLeft}s</span></div>
+          <div>Tempo: <span className="highlight" style={{color: timeLeft <= 3 ? '#ef4444' : 'var(--cyan)'}}>{timeLeft}s</span></div>
           <div>Pontos: <span className="highlight">{score}</span></div>
         </div>
         
@@ -376,7 +405,7 @@ function App() {
       <h2>Fim de Jogo!</h2>
       <div style={{margin: '2rem 0'}}>
         <p style={{fontSize: '1.2rem', color: '#a1a1aa'}}>Sua pontuação final:</p>
-        <div style={{fontSize: '4rem', color: 'var(--orange)', fontFamily: 'Montserrat', fontWeight: 900, lineHeight: 1, margin: '10px 0'}}>
+        <div style={{fontSize: '4rem', color: 'var(--cyan)', fontFamily: 'Orbitron', fontWeight: 900, lineHeight: 1, margin: '10px 0'}}>
           {score}
         </div>
         
