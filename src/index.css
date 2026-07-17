@@ -462,3 +462,40 @@ h1 span {
   font-family: 'Inter', sans-serif;
   margin-top: 2px;
 }
+
+.game-links-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 242, 254, 0.1);
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.game-link-btn {
+  background: rgba(0, 242, 254, 0.05);
+  border: 1px solid rgba(0, 242, 254, 0.2);
+  color: var(--text-main);
+  text-decoration: none;
+  padding: 8px 14px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  border-radius: 8px;
+  letter-spacing: 0.05em;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+}
+
+.game-link-btn:hover {
+  background: rgba(0, 242, 254, 0.15);
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+  transform: translateY(-1px);
+}

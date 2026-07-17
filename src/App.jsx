@@ -317,6 +317,20 @@ function App() {
     URL.revokeObjectURL(url);
   };
 
+  const renderGameLinks = () => (
+    <div className="game-links-container">
+      <a href="https://jogos.chumbada.com.br" target="_blank" rel="noopener noreferrer" className="game-link-btn">
+        Hub de Jogos
+      </a>
+      <a href="https://jogodasiscas.chumbada.com.br" target="_blank" rel="noopener noreferrer" className="game-link-btn">
+        Jogo das Iscas
+      </a>
+      <a href="https://jogodosanzois.chumbada.com.br" target="_blank" rel="noopener noreferrer" className="game-link-btn">
+        Jogo dos Anzóis
+      </a>
+    </div>
+  );
+
   const renderLogin = () => (
     <div className="card">
       <img src="images/CHUMBADA-OFICIAL.png" alt="Chumbada Oficial" className="logo" />
@@ -373,6 +387,7 @@ function App() {
       >
         Ver Ranking Atual
       </button>
+      {renderGameLinks()}
     </div>
   );
 
@@ -456,6 +471,7 @@ function App() {
       <button className="btn-secondary" onClick={() => setGameState('login')} disabled={isSaving}>
         Jogar Novamente
       </button>
+      {renderGameLinks()}
     </div>
   );
 
@@ -490,6 +506,7 @@ function App() {
         <button className="btn-primary" onClick={() => setGameState('login')}>
           <span>Voltar ao Início</span>
         </button>
+        {renderGameLinks()}
 
         {/* Admin Secret Feature */}
         <div style={{marginTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem'}}>
@@ -517,7 +534,7 @@ function App() {
       {gameState === 'leaderboard' && renderLeaderboard()}
 
       <footer className="game-footer">
-        v1.4.1
+        v1.5.0
       </footer>
     </div>
   );
