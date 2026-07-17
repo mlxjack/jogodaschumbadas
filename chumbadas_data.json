@@ -160,19 +160,19 @@
         "image": "assets/images/chumbada-capela-natural.png"
     },
     {
-        "name": "Chumbada Carambola Furada",
+        "name": "Chumbada Carambola Com Cauda Furada",
         "image": "assets/images/chumbada-carambola-com-cauda-furada-natural.png"
     },
     {
-        "name": "Chumbada Carambola",
+        "name": "Chumbada Carambola Com Cauda",
         "image": "assets/images/chumbada-carambola-com-cauda-natural-haste.png"
     },
     {
-        "name": "Chumbada Carambola",
+        "name": "Chumbada Carambola Com Cauda",
         "image": "assets/images/chumbada-carambola-com-cauda-natural-olhal.png"
     },
     {
-        "name": "Chumbada Carambola",
+        "name": "Chumbada Carambola Com Cauda",
         "image": "assets/images/chumbada-carambola-com-cauda-natural.png"
     },
     {
@@ -180,15 +180,15 @@
         "image": "assets/images/chumbada-carambola-furada-natural.png"
     },
     {
-        "name": "Chumbada Carambola",
+        "name": "Chumbada Carambola Sem Cauda",
         "image": "assets/images/chumbada-carambola-sem-cauda-natural-haste.png"
     },
     {
-        "name": "Chumbada Carambola",
+        "name": "Chumbada Carambola Sem Cauda",
         "image": "assets/images/chumbada-carambola-sem-cauda-natural-olhal.png"
     },
     {
-        "name": "Chumbada Carambola",
+        "name": "Chumbada Carambola Sem Cauda",
         "image": "assets/images/chumbada-carambola-sem-cauda-natural.png"
     },
     {
@@ -300,15 +300,15 @@
         "image": "assets/images/chumbada-golfe.png"
     },
     {
-        "name": "Chumbada Gota",
+        "name": "Chumbada Gota Com Cauda",
         "image": "assets/images/chumbada-gota-com-cauda-natural-haste.png"
     },
     {
-        "name": "Chumbada Gota",
+        "name": "Chumbada Gota Com Cauda",
         "image": "assets/images/chumbada-gota-com-cauda-natural-olhal.png"
     },
     {
-        "name": "Chumbada Gota",
+        "name": "Chumbada Gota Com Cauda",
         "image": "assets/images/chumbada-gota-com-cauda-natural.png"
     },
     {
@@ -324,15 +324,15 @@
         "image": "assets/images/chumbada-gota-lancamento-limitado-natural.png"
     },
     {
-        "name": "Chumbada Gota",
+        "name": "Chumbada Gota Sem Cauda",
         "image": "assets/images/chumbada-gota-sem-cauda-natural-haste.png"
     },
     {
-        "name": "Chumbada Gota",
+        "name": "Chumbada Gota Sem Cauda",
         "image": "assets/images/chumbada-gota-sem-cauda-natural-olhal.png"
     },
     {
-        "name": "Chumbada Gota",
+        "name": "Chumbada Gota Sem Cauda",
         "image": "assets/images/chumbada-gota-sem-cauda-natural.png"
     },
     {
@@ -412,7 +412,7 @@
         "image": "assets/images/chumbada-pargueira-speedy-natural-furada.png"
     },
     {
-        "name": "Chumbada Pargueira Speedy",
+        "name": "Chumbada Pargueira Speedy Duplo",
         "image": "assets/images/chumbada-pargueira-speedy-natural-olhal-duplo.png"
     },
     {
@@ -460,11 +460,11 @@
         "image": "assets/images/chumbada-pingo-de-secao-quadrada-natural.png"
     },
     {
-        "name": "Chumbada Piramide Chata",
+        "name": "Chumbada Piramide Chata Com Duplo",
         "image": "assets/images/chumbada-piramide-chata-com-olhal-duplo-natural.png"
     },
     {
-        "name": "Chumbada Piramide",
+        "name": "Chumbada Piramide Com De Chumbo",
         "image": "assets/images/chumbada-piramide-com-olhal-de-chumbo-natural.png"
     },
     {
@@ -528,7 +528,7 @@
         "image": "assets/images/chumbada-piramide-x.png"
     },
     {
-        "name": "Chumbada Pirulito",
+        "name": "Chumbada Pirulito Com De Chumbo",
         "image": "assets/images/chumbada-pirulito-com-olhal-de-chumbo-natural.jpg"
     },
     {
@@ -624,15 +624,15 @@
         "image": "assets/images/chumbada-torpedao-natural.png"
     },
     {
-        "name": "Chumbada Torpedo",
+        "name": "Chumbada Torpedo Com Asa",
         "image": "assets/images/chumbada-torpedo-com-asa-natural-haste.png"
     },
     {
-        "name": "Chumbada Torpedo",
+        "name": "Chumbada Torpedo Com Asa",
         "image": "assets/images/chumbada-torpedo-com-asa-natural-olhal.jpg"
     },
     {
-        "name": "Chumbada Torpedo",
+        "name": "Chumbada Torpedo Com Asa",
         "image": "assets/images/chumbada-torpedo-com-asa-natural.jpg"
     },
     {
