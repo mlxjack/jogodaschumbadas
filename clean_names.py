@@ -40,8 +40,16 @@ def setup_and_clean():
         # 2. Remove specific variation words (case-insensitive)
         name = re.sub(r'\bNatural\b', '', name, flags=re.IGNORECASE)
         name = re.sub(r'\bHaste\b', '', name, flags=re.IGNORECASE)
-        name = re.sub(r'\bOlhal\b', '', name, flags=re.IGNORECASE)
+        name = re.sub(r'\bOlhal\b(?!\s+Duplo)', '', name, flags=re.IGNORECASE)
+        
+        # Strip trailing connectors
+        name = re.sub(r'\b(Com|Sem|De)\b\s*$', '', name, flags=re.IGNORECASE)
+        
         # Clean multiple spaces and trim
+        name = re.sub(r'\s+', ' ', name).strip()
+        
+        # Strip trailing connectors again in case there were multiple
+        name = re.sub(r'\b(Com|Sem|De)\b\s*$', '', name, flags=re.IGNORECASE)
         name = re.sub(r'\s+', ' ', name).strip()
         
         # 5. Fix accents and Portuguese spelling
