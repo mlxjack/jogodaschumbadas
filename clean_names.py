@@ -41,34 +41,7 @@ def setup_and_clean():
         name = re.sub(r'\bNatural\b', '', name, flags=re.IGNORECASE)
         name = re.sub(r'\bHaste\b', '', name, flags=re.IGNORECASE)
         name = re.sub(r'\bOlhal\b', '', name, flags=re.IGNORECASE)
-        name = re.sub(r'\bDuplo\b', '', name, flags=re.IGNORECASE)
-        name = re.sub(r'\bMaior\b', '', name, flags=re.IGNORECASE)
-        name = re.sub(r'\bMenor\b', '', name, flags=re.IGNORECASE)
-        name = re.sub(r'\bMaiores\b', '', name, flags=re.IGNORECASE)
-        name = re.sub(r'\bMenores\b', '', name, flags=re.IGNORECASE)
-        name = re.sub(r'\bAnzois\b', '', name, flags=re.IGNORECASE)
-        name = re.sub(r'\bAnzóis\b', '', name, flags=re.IGNORECASE)
-        name = re.sub(r'\b60\b', '', name, flags=re.IGNORECASE)
-        name = re.sub(r'\bGraus\b', '', name, flags=re.IGNORECASE)
-        
-        # 3. Remove phrases
-        name = re.sub(r'\bCom\s+Mola\s+Sapatinho\b', '', name, flags=re.IGNORECASE)
-        name = re.sub(r'\bCom\s+Cauda\b', '', name, flags=re.IGNORECASE)
-        name = re.sub(r'\bSem\s+Cauda\b', '', name, flags=re.IGNORECASE)
-        name = re.sub(r'\bCom\s+Asa\b', '', name, flags=re.IGNORECASE)
-        
-        # 4. Remove left over connectors at the end or double connectors
-        name = re.sub(r'\bCom\s+De\s+Chumbo\b', '', name, flags=re.IGNORECASE)
-        name = re.sub(r'\bDe\s+Chumbo\b', '', name, flags=re.IGNORECASE)
-        
-        # Strip trailing "Com" or "Sem" or "De"
-        name = re.sub(r'\b(Com|Sem|De)\b\s*$', '', name, flags=re.IGNORECASE)
-        
         # Clean multiple spaces and trim
-        name = re.sub(r'\s+', ' ', name).strip()
-        
-        # Clean double trailing prepositions again just in case
-        name = re.sub(r'\b(Com|Sem|De)\b\s*$', '', name, flags=re.IGNORECASE)
         name = re.sub(r'\s+', ' ', name).strip()
         
         # 5. Fix accents and Portuguese spelling
