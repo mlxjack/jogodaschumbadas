@@ -12,19 +12,19 @@
         "image": "assets/images/chumbada-aero-natural.png"
     },
     {
-        "name": "Chumbada Ancora",
+        "name": "Chumbada Âncora",
         "image": "assets/images/chumbada-ancora-natural.png"
     },
     {
-        "name": "Chumbada Aquazoom",
+        "name": "Chumbada Aqua Zoom",
         "image": "assets/images/chumbada-aquazoom-natural-haste.jpg"
     },
     {
-        "name": "Chumbada Aquazoom",
+        "name": "Chumbada Aqua Zoom",
         "image": "assets/images/chumbada-aquazoom-natural-olhal.png"
     },
     {
-        "name": "Chumbada Aquazoom",
+        "name": "Chumbada Aqua Zoom",
         "image": "assets/images/chumbada-aquazoom-natural.png"
     },
     {
@@ -92,7 +92,7 @@
         "image": "assets/images/chumbada-bico-de-pato-redondo.png"
     },
     {
-        "name": "Chumbada Bola",
+        "name": "Chumbada Bola Furada",
         "image": "assets/images/chumbada-bola-furada-natural.png"
     },
     {
@@ -128,15 +128,15 @@
         "image": "assets/images/chumbada-bullet-natural.png"
     },
     {
-        "name": "Chumbada Caixao",
+        "name": "Chumbada Caixão",
         "image": "assets/images/chumbada-caixao-natural-haste.jpg"
     },
     {
-        "name": "Chumbada Caixao",
+        "name": "Chumbada Caixão",
         "image": "assets/images/chumbada-caixao-natural-olhal.png"
     },
     {
-        "name": "Chumbada Caixao",
+        "name": "Chumbada Caixão",
         "image": "assets/images/chumbada-caixao-natural.png"
     },
     {
@@ -160,7 +160,7 @@
         "image": "assets/images/chumbada-capela-natural.png"
     },
     {
-        "name": "Chumbada Carambola",
+        "name": "Chumbada Carambola Furada",
         "image": "assets/images/chumbada-carambola-com-cauda-furada-natural.png"
     },
     {
@@ -176,7 +176,7 @@
         "image": "assets/images/chumbada-carambola-com-cauda-natural.png"
     },
     {
-        "name": "Chumbada Carambola",
+        "name": "Chumbada Carambola Furada",
         "image": "assets/images/chumbada-carambola-furada-natural.png"
     },
     {
@@ -192,15 +192,15 @@
         "image": "assets/images/chumbada-carambola-sem-cauda-natural.png"
     },
     {
-        "name": "Chumbada Carambolao",
+        "name": "Chumbada Carambolão Furada",
         "image": "assets/images/chumbada-carambolao-natural-furada.png"
     },
     {
-        "name": "Chumbada Carambolao",
+        "name": "Chumbada Carambolão",
         "image": "assets/images/chumbada-carambolao-natural-olhal.png"
     },
     {
-        "name": "Chumbada Carambolao",
+        "name": "Chumbada Carambolão",
         "image": "assets/images/chumbada-carambolao-natural.png"
     },
     {
@@ -248,7 +248,7 @@
         "image": "assets/images/chumbada-coxinha-sextavada-natural.jpg"
     },
     {
-        "name": "Chumbada De Corricar",
+        "name": "Chumbada De Corricar Furada",
         "image": "assets/images/chumbada-de-corricar-furada.png"
     },
     {
@@ -312,15 +312,15 @@
         "image": "assets/images/chumbada-gota-com-cauda-natural.png"
     },
     {
-        "name": "Chumbada Gota Conica",
+        "name": "Chumbada Gota Cônica",
         "image": "assets/images/chumbada-gota-conica-natural.png"
     },
     {
-        "name": "Chumbada Gota Lancamento Limitado De Competicao",
+        "name": "Chumbada Gota Lançamento Limitado De Competição",
         "image": "assets/images/chumbada-gota-lancamento-limitado-de-competicao.png"
     },
     {
-        "name": "Chumbada Gota Lancamento Limitado",
+        "name": "Chumbada Gota Lançamento Limitado",
         "image": "assets/images/chumbada-gota-lancamento-limitado-natural.png"
     },
     {
@@ -372,7 +372,7 @@
         "image": "assets/images/chumbada-mega-bat-natural.png"
     },
     {
-        "name": "Chumbada Missil Dread Fishing",
+        "name": "Chumbada Míssil Dread Fishing",
         "image": "assets/images/chumbada-missil-dread-fishing-natural.png"
     },
     {
@@ -396,19 +396,19 @@
         "image": "assets/images/chumbada-oliva-natural.png"
     },
     {
-        "name": "Chumbada Pargueira Missil",
+        "name": "Chumbada Pargueira Míssil Furada",
         "image": "assets/images/chumbada-pargueira-missil-natural-furada.png"
     },
     {
-        "name": "Chumbada Pargueira Missil",
+        "name": "Chumbada Pargueira Míssil",
         "image": "assets/images/chumbada-pargueira-missil-natural-olhal.png"
     },
     {
-        "name": "Chumbada Pargueira Missil",
+        "name": "Chumbada Pargueira Míssil",
         "image": "assets/images/chumbada-pargueira-missil-natural.png"
     },
     {
-        "name": "Chumbada Pargueira Speedy",
+        "name": "Chumbada Pargueira Speedy Furada",
         "image": "assets/images/chumbada-pargueira-speedy-natural-furada.png"
     },
     {
@@ -436,27 +436,27 @@
         "image": "assets/images/chumbada-pertinax-natural.png"
     },
     {
-        "name": "Chumbada Piao",
+        "name": "Chumbada Pião",
         "image": "assets/images/chumbada-piao-natural-haste.png"
     },
     {
-        "name": "Chumbada Piao",
+        "name": "Chumbada Pião",
         "image": "assets/images/chumbada-piao-natural-olhal.png"
     },
     {
-        "name": "Chumbada Piao",
+        "name": "Chumbada Pião",
         "image": "assets/images/chumbada-piao-natural.png"
     },
     {
-        "name": "Chumbada Pingo De Secao Quadrada",
+        "name": "Chumbada Pingo de Seção Quadrada",
         "image": "assets/images/chumbada-pingo-de-secao-quadrada-natural-haste.png"
     },
     {
-        "name": "Chumbada Pingo De Secao Quadrada",
+        "name": "Chumbada Pingo de Seção Quadrada",
         "image": "assets/images/chumbada-pingo-de-secao-quadrada-natural-olhal.png"
     },
     {
-        "name": "Chumbada Pingo De Secao Quadrada",
+        "name": "Chumbada Pingo de Seção Quadrada",
         "image": "assets/images/chumbada-pingo-de-secao-quadrada-natural.png"
     },
     {
@@ -488,7 +488,7 @@
         "image": "assets/images/chumbada-piramide-dupla.jpg"
     },
     {
-        "name": "Chumbada Piramide",
+        "name": "Chumbada Piramide Furada",
         "image": "assets/images/chumbada-piramide-furada-natural.png"
     },
     {
@@ -548,7 +548,7 @@
         "image": "assets/images/chumbada-portuguesa-natural.jpg"
     },
     {
-        "name": "Chumbada Prego Macico",
+        "name": "Chumbada Prego Maciço",
         "image": "assets/images/chumbada-prego-macico.jpg"
     },
     {
@@ -620,7 +620,7 @@
         "image": "assets/images/chumbada-top-shock-natural.jpg"
     },
     {
-        "name": "Chumbada Torpedao",
+        "name": "Chumbada Torpedão",
         "image": "assets/images/chumbada-torpedao-natural.png"
     },
     {

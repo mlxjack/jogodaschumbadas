@@ -41,8 +41,6 @@ def setup_and_clean():
         name = re.sub(r'\bNatural\b', '', name, flags=re.IGNORECASE)
         name = re.sub(r'\bHaste\b', '', name, flags=re.IGNORECASE)
         name = re.sub(r'\bOlhal\b', '', name, flags=re.IGNORECASE)
-        name = re.sub(r'\bFurada\b', '', name, flags=re.IGNORECASE)
-        name = re.sub(r'\bFurado\b', '', name, flags=re.IGNORECASE)
         name = re.sub(r'\bDuplo\b', '', name, flags=re.IGNORECASE)
         name = re.sub(r'\bMaior\b', '', name, flags=re.IGNORECASE)
         name = re.sub(r'\bMenor\b', '', name, flags=re.IGNORECASE)
@@ -72,6 +70,28 @@ def setup_and_clean():
         # Clean double trailing prepositions again just in case
         name = re.sub(r'\b(Com|Sem|De)\b\s*$', '', name, flags=re.IGNORECASE)
         name = re.sub(r'\s+', ' ', name).strip()
+        
+        # 5. Fix accents and Portuguese spelling
+        replacements = {
+            r'\bCarambolao\b': 'Carambolão',
+            r'\bConica\b': 'Cônica',
+            r'\bMissil\b': 'Míssil',
+            r'\bPiao\b': 'Pião',
+            r'\bAncora\b': 'Âncora',
+            r'\bAgua\b': 'Água',
+            r'\bAquazoom\b': 'Aqua Zoom',
+            r'\bCaixao\b': 'Caixão',
+            r'\bMacico\b': 'Maciço',
+            r'\bPargueira\b': 'Pargueira',
+            r'\bSextavada\b': 'Sextavada',
+            r'\bLancamento\b': 'Lançamento',
+            r'\bCompeticao\b': 'Competição',
+            r'\bCone Bomba\b': 'Cone Bomba',
+            r'\bTorpedao\b': 'Torpedão',
+            r'\bPingo De Secao Quadrada\b': 'Pingo de Seção Quadrada'
+        }
+        for pattern, repl in replacements.items():
+            name = re.sub(pattern, repl, name, flags=re.IGNORECASE)
         
         unique_names.add(name)
         cleaned_data.append({
